@@ -86,6 +86,7 @@ def main():
 if __name__ == '__main__':
     pygm.BACKEND = 'jittor'  # set Jittor as the default backend for pygmtools
     jittor.flags.use_cuda = jittor.has_cuda
+    jittor.flags.no_fuse = True
     opt = Options().parse()  # parse options
     jittor.set_global_seed(opt.seed)  # set global random seed
 
