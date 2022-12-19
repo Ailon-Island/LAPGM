@@ -3,6 +3,7 @@ import itertools
 import matplotlib.pyplot as plt # for plotting
 from matplotlib.patches import ConnectionPatch # for plotting matching result
 
+import cv2
 import scipy.io as sio # for loading .mat file
 import scipy.spatial as spa # for Delaunay triangulation
 from sklearn.decomposition import PCA as PCAdimReduc
@@ -32,10 +33,33 @@ def scheduler_step(scheduler, steps=1):
 
 # calculating
 def delaunay_triangulation(kpt):
+    if kpt.shape[1] <= 3:
+        A = np.ones((kpt.shape[0], kpt.shape[0])) - np.eye(kpt.shape[0])
+        return A
+
     d = spa.Delaunay(kpt.transpose())
     A = np.zeros((len(kpt[0]), len(kpt[0])))
     for simplex in d.simplices:
         for pair in itertools.permutations(simplex, 2):
+            A[pair] = 1
+    return A
+
+
+def delaunay_triangulation_opencv(kpt, size):
+    rect = (0, 0, size[1], size[0])
+    subdiv = cv2.Subdiv2D(rect)
+    for p in kpt.transpose():
+        subdiv.insert(p)
+    A = np.zeros((len(kpt[0]), len(kpt[0])))
+    triangles = subdiv.getTriangleList()
+    for t in triangles:
+        idx = []
+        for i in range(3):
+            for j, p in enumerate(kpt):
+                if abs(t[i * 2] - p[0]) < 1e-3 and abs(t[i * 2 + 1] - p[1]) < 1e-3:
+                    idx.append(j)
+                    break
+        for pair in itertools.permutations(idx, 2):
             A[pair] = 1
     return A
 

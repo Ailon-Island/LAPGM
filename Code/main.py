@@ -80,8 +80,7 @@ def main():
     if opt.train:
         trainer.train()
     else:
-        for _ in range(10):
-            trainer.test()
+        trainer.test()
 
 
 if __name__ == '__main__':
