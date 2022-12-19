@@ -1,0 +1,40 @@
+\begin{thebibliography}{1}
+
+\bibitem{voc2}
+L.~Bourdev and J.~Malik.
+\newblock Poselets: Body part detectors trained using 3d human pose
+  annotations.
+\newblock In {\em International Conference on Computer Vision}, pages
+  1365--1372. IEEE, 2009.
+
+\bibitem{willow}
+Minsu Cho, Karteek Alahari, and Jean Ponce.
+\newblock Learning graphs to match.
+\newblock In {\em International Conference on Computer Vision}, pages 25--32,
+  2013.
+
+\bibitem{voc1}
+Mark Everingham, Luc Van~Gool, Christopher~KI Williams, John Winn, and Andrew
+  Zisserman.
+\newblock The pascal visual object classes (voc) challenge.
+\newblock {\em International Journal of Computer Vision}, 88:303–338, 2010.
+
+\bibitem{vgg}
+Karen Simonyan and Andrew Zisserman.
+\newblock Very deep convolutional networks for large-scale image recognition.
+\newblock {\em arXiv preprint arXiv:1409.1556}, 2014.
+
+\bibitem{pca-ipca}
+Runzhong Wang, Junchi Yan, and Xiaokang Yang.
+\newblock Combinatorial learning of robust deep graph matching: an embedding
+  based approach.
+\newblock {\em IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  2020.
+
+\bibitem{cie}
+Tianshu Yu, Runzhong Wang, Junchi Yan, and Baoxin Li.
+\newblock Learning deep graph matching with channel-independent embedding and
+  hungarian attention.
+\newblock In {\em International Conference on Learning Representations}, 2020.
+
+\end{thebibliography}

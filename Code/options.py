@@ -23,6 +23,7 @@ class Options():
 
         # Model
         self.parser.add_argument('--model', type=str, default='pca-gm', help='matching method')
+        self.parser.add_argument('--hungarian_attention', action='store_true', help='use hungarian attention')
 
         # Training
         self.parser.add_argument('--train', type=bool, default=True, help='train or test')
