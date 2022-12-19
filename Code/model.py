@@ -11,15 +11,19 @@ from utils import l2norm
 
 
 def get_gm_model(model, pretrain=False):
+    edge_feature = False
     if model == 'pca-gm':
         gm_fn = pygm.pca_gm
     elif model == 'ipca-gm':
         gm_fn = pygm.ipca_gm
+    elif model == 'cie':
+        gm_fn = pygm.cie
+        edge_feature = True
     else:
         raise NotImplementedError(f'Model {model} is not implemented')
     gm_model = pygm.utils.get_network(gm_fn, pretrain=pretrain)
 
-    return gm_fn, gm_model
+    return gm_fn, gm_model, edge_feature
 
 
 class Extractor(Module):
@@ -58,7 +62,8 @@ class LAPGM(Module):
         super(LAPGM, self).__init__()
         self.opt = opt
         self.extractor = Extractor(vgg)
-        self.gm_fn, self.gm_model = get_gm_model(opt.model, pretrain=self.opt.pretrain)
+        self.gm_fn, self.gm_model, self.edge_feature = get_gm_model(opt.model, pretrain=self.opt.pretrain)
+        self.hungarian_attention = opt.hungarian_attention
 
     def execute(self, img, kpt, A, tgt=None, extractor_train=False):
         """
@@ -94,26 +99,40 @@ class LAPGM(Module):
             node = node.gather(2, rounded_kpt[:, :, 0, None])  # BG, N, 1, F
             node = node.reshape(*img.shape[:2], -1, node.shape[-1])  # B, G, N, F
 
+            # get edge features
+            Q = None
+            if self.edge_feature:
+                kpt_dis = kpt.unsqueeze(3) - kpt.unsqueeze(4)  # B, G, 2, N, N
+                kpt_dis = jittor.norm(kpt_dis, p=2, dim=2)  # B, G, N, N
+                Q = jittor.exp(-kpt_dis / img.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
+
         # match graphs
-        pred, pred_matching = self.gm(node, A)  # B, N, N
+        pred, pred_matching = self.gm(node, A, Q)  # B, N, N
 
         # compute loss
         if tgt is not None:
+            if self.opt.hungarian_attention:
+                Z = (pred_matching + tgt).bool().float32()
+                pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred, tgt)
             return pred, pred_matching, loss
 
         return pred, pred_matching
 
-    def gm(self, node, A):
+    def gm(self, node, A, Q):
         """
         Match two graphs
         :param node: node features of the two graphs, shape (B, G, N, F)
         :param A: adjacency matrices of the two graphs, shape (B, G, N, N)
+        :param Q: edge features of the two graphs, shape (B, G, N, N, 1)
         :return:
             pred: predicted soft matching, shape (B, N, N)
             pred_matching: predicted matching, shape (B, N, N)
         """
-        pred = self.gm_fn(node[:, 0], node[:, 1], A[:, 0], A[:, 1], network=self.gm_model)
+        if self.edge_feature:
+            pred = self.gm_fn(node[:, 0], node[:, 1], A[:, 0], A[:, 1], Q[:, 0], Q[:, 1], network=self.gm_model)
+        else:
+            pred = self.gm_fn(node[:, 0], node[:, 1], A[:, 0], A[:, 1], network=self.gm_model)
         with jittor.no_grad():
             pred_matching = pygm.hungarian(pred)
 

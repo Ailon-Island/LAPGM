@@ -2,7 +2,7 @@ import numpy as np
 
 from jittor.dataset import Dataset
 
-from utils import delaunay_triangulation
+from utils import delaunay_triangulation_opencv, delaunay_triangulation
 
 
 class GMDataset(Dataset):

@@ -1,0 +1,81 @@
+% !Mode:: "TeX:UTF-8"
+% !TEX program  = xelatex
+\documentclass[a4paper]{article}
+\usepackage{ctex}
+\usepackage[left=1.5cm, right=1.5cm, top=1.5cm, bottom=1.5cm]{geometry} %页边距
+\usepackage{helvet}
+\usepackage{amsmath, amsfonts, amssymb} % 数学公式、符号
+\usepackage[english]{babel}
+\usepackage{graphicx}   % 图片
+\usepackage{url}        % 超链接
+\usepackage{bm}         % 加粗方程字体
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tikz}%调用宏包tikz
+\usepackage{circuitikz}%调用宏包circuitikz
+\usepackage{enumerate}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage{listings}
+\usepackage{textcomp}
+\usepackage{multicol}
+% \usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+% Python listing
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\sffamily,
+keywordstyle=\textbf,
+commentstyle=\color{blue},
+showstringspaces=false, 
+numbers=left }}
+% Python environment
+\lstnewenvironment{python}[1][]{
+\pythonstyle \lstset{#1} }{}
+
+\newcommand{\threemetrics}[3]{\multirow{3}{*}{\shortstack[c]{$\textcolor{orange}{#1}$\\$\textcolor{blue}{#2}$\\$\textcolor{green}{#3}$}}}
+\newcommand{\twometrics}[2]{\multirow{2}{*}{\shortstack[c]{$\textcolor{blue}{#1}$\\$\textcolor{green}{#2}$}}}
+
+\renewcommand{\algorithmicrequire}{ \textbf{Input:}}       
+\renewcommand{\algorithmicensure}{ \textbf{Output:}} 
+%算法格式
+\usepackage{subfigure}
+\usepackage{fancyhdr} %设置页眉、页脚
+\usepackage{gensymb}
+
+\pagestyle{fancy}
+\lhead{MiniProject 2: Image Classification, AI3607 Deep Learning and Its Application}
+\chead{}
+\rhead{蒋伟, 520030910149}
+\lfoot{}
+\cfoot{\thepage}
+\rfoot{}
+
+
+\usepackage{ifthen}
+\usepackage{xifthen}
+
+\newcommand{\dom}[1]{\mathop{\mathrm{dom}}\left(#1\right)}
+\newcommand{\rng}[1]{\mathop{\mathrm{rng}}\left(#1\right)}
+\newcommand{\preimg}[2][]{ \ifthenelse{\isempty{#1}}
+  {\mathop{\mathrm{preimage}}\left(#2\right)}
+  {\mathop{\mathrm{preimage}}_{#1}\left(#2\right)} }
+\newcommand{\set}[1]{\left\{#1\right\}}
+
+\newenvironment{proof}{{\par\noindent\it Proof.}\quad\par}{\hfill $\square$\par}  
+
+\title{AI3607 Deep Learning and Its Application\\Project: LAPGM}
+\author{\sffamily 蒋伟, F2003801, 520030910149}
+\date{(Dated: \today)}
+\begin{document}
+
+\cite{pca-ipca}, \cite{cie}, \cite{voc1}, \cite{voc2}, \cite{willow}, \cite{vgg}
+
+
+\bibliographystyle{plain}
+\bibliography{reference}
+
+\end{document}
