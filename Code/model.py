@@ -103,7 +103,7 @@ class LAPGM(Module):
             Q = None
             if self.edge_feature:
                 kpt_dis = kpt.unsqueeze(3) - kpt.unsqueeze(4)  # B, G, 2, N, N
-                kpt_dis = jittor.norm(kpt_dis, dim=2)  # B, G, N, N
+                kpt_dis = jittor.norm(kpt_dis, p=2, dim=2)  # B, G, N, N
                 Q = jittor.exp(-kpt_dis / img.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
 
         # match graphs
