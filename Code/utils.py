@@ -21,6 +21,14 @@ class DummyScheduler:
     def step(self):
         pass
 
+    def update_lr(self, lr):
+        pass
+
+
+def scheduler_step(scheduler, steps=1):
+    for _ in range(steps):
+        scheduler.step()
+
 
 # calculating
 def delaunay_triangulation(kpt):

@@ -7,9 +7,7 @@ import numpy as np
 
 import jittor
 
-from utils import plot_training_procedure, cal_metrics
-
-metrics_list = ['precision', 'recall', 'f1']
+from utils import plot_training_procedure, cal_metrics, scheduler_step
 
 
 class Trainer:
@@ -34,9 +32,11 @@ class Trainer:
             self.load(opt.resume_name, opt.resume_iter, opt.resume_model_only)
 
     def train_one_batch(self, batch_idx, img, kpt, A, tgt):
-        pred, pred_matching, loss = self.model(img, kpt, A, tgt)
-        self.optimizer.step(loss)
-        self.lr_scheduler.step()
+        pred, pred_matching, loss = self.model(img, kpt, A, tgt, extractor_train=self.opt.extractor_train)
+        self.optimizer.backward(loss)
+        self.optimizer.step()
+        self.optimizer.zero_grad()
+        scheduler_step(self.lr_scheduler, img.shape[0])
 
         metrics = cal_metrics(pred_matching, tgt)
 
@@ -48,10 +48,8 @@ class Trainer:
         self.model.train()
 
         num_iter = 0
-        pbar_loader = tqdm(enumerate(self.loader, start=1), total=len(self.loader))
+        pbar_loader = tqdm(enumerate(self.loader, start=1), total=self.loader.__batch_len__())
         for batch_idx, (img, kpt, A, tgt, _, _) in pbar_loader:
-            pbar_loader.set_description(f'[TRAIN] [Epoch: {self.total_epochs} Iteration: {self.total_iters}]')
-
             # skip batch/iterations if already trained
             if num_iter + img.shape[0] <= self.epoch_iters:
                 continue
@@ -65,54 +63,52 @@ class Trainer:
             num_iter += img.shape[0]
             if self.opt.use_tensorboard:
                 self.writer.add_scalar('train/loss', loss, self.total_iters)
-                for metric_name in metrics_list:
-                    self.writer.add_scalar(f'train/{metric_name}', metrics[metric_name], self.total_iters)
+                for name, metric in metrics.items():
+                    self.writer.add_scalar(f'train/{name}', metric, self.total_iters)
 
             # print training info
+            pbar_loader.set_description(f'[TRAIN] [Epoch: {epoch_idx} Iteration: {self.total_iters} LR: {self.optimizer.lr:.6f}]')
             pbar_loader.set_postfix(
                 loss=loss,
-                **{f'{metric_name}': metrics[metric_name] for metric_name in metrics_list}
+                **{name: f'{metric:.6f}' for name, metric in metrics.items()}
             )
             if num_iter % self.opt.train_log_iter == 0:
                 self.log(
-                    '[TRAIN] [Epoch: {} ({}/{} {:.0f}%) Iteration: {}] Loss: {:.6f} '.format(
+                    '[TRAIN] [Epoch: {} ({}/{} {:.0f}%) Iteration: {} LR: {:.6f}] Loss: {:.6f} '.format(
                         epoch_idx, num_iter, len(self.loader), 100. * num_iter / len(self.loader),
-                        self.total_iters, loss,
+                        self.total_iters, self.optimizer.lr, loss,
                     ) +
                     ''.join(
-                        [f'{metric_name.capitalize()}: {metrics[metric_name]:.6f} ' for metric_name in metrics_list]
+                        [f'{name.capitalize()}: {metric:.6f} ' for name, metric in metrics.items()]
                     )
                 )
 
         # finish training one epoch
         self.log(
             '[TRAIN] [Epoch: {} (finished) Iteration: {}] Loss: {:.6f} '.format(
-                epoch_idx, num_iter, len(self.loader), 100. * num_iter / len(self.loader),
-                self.total_iters, loss,
+                epoch_idx, self.total_iters, loss,
             ) +
             ''.join(
-                [f'{metric_name.capitalize()}: {metrics[metric_name]:.6f} ' for metric_name in metrics_list]
+                [f'{name.capitalize()}: {metric:.6f} ' for name, metric in metrics.items()]
             )
         )
 
         # reset epoch_iters
         self.epoch_iters = 0
 
-    def test_one_batch(self, batch_idx, img, kpt, A, tgt, ids, cls):
-        # fix batched list of strings
-        ids = np.array(ids).T
-
+    def test_one_batch(self, batch_idx, img, kpt, A, tgt):
         with jittor.no_grad():
             pred, pred_matching, loss = self.model(img, kpt, A, tgt)
 
-        metrics = self.eval(pred_matching, ids, cls)
+        metrics = cal_metrics(pred_matching, tgt)
 
         return pred.numpy(), pred_matching.numpy(), loss.item(), metrics
 
     def train(self, end_epoch=None):
         """
-        Train the model till end_epoch or max_iter
+        Train the model till end_epoch or max_iters
         """
+        training_saved = self.training
         self.training = True
         # check if training accessible
         if self.opt.train and (self.loader is None or self.benchmark is None):
@@ -121,7 +117,13 @@ class Trainer:
         if self.opt.use_tensorboard:
             self.writer = tensorboardX.SummaryWriter(log_dir=os.path.join(self.opt.checkpoint, self.opt.name, 'tensorboard'))
 
+        # test now
+        if self.opt.test_now:
+            self.test()
+
+        # start training
         self.log('[INFO] Start Training...')
+        train_time = 0
         start_epoch = self.total_epochs + 1
         end_epoch = end_epoch or self.opt.epochs
         for epoch_idx in range(start_epoch, end_epoch + 1):
@@ -130,6 +132,7 @@ class Trainer:
             epoch_start_time = time.time()
             self.train_one_epoch(epoch_idx)
             epoch_time = time.time() - epoch_start_time
+            train_time += epoch_time
             self.total_epochs += 1
 
             # save model
@@ -142,94 +145,105 @@ class Trainer:
 
             # visualization
             self.log(f'[INFO] End of epoch. Epoch: {epoch_idx} Iteration: {self.total_iters} Time: {epoch_time:.2f}s')
-            if self.total_iters >= self.opt.max_iter:
+            if self.total_iters >= self.opt.max_iters:
                 self.log('Reach max iteration. Stop training.')
                 break
 
         # test final result
-        if self.total_epochs % self.opt.test_epoch != 0:
+        if self.total_epochs == 0 or self.total_epochs % self.opt.test_epoch != 0:
             self.test()
 
         # save final training procedure
         self.writer.close()
 
+        self.log(f'[INFO] End of training. Total epochs: {self.total_epochs} Total iterations: {self.total_iters} Total time: {train_time:.2f}s')
+
+        self.training = training_saved
+
     def test(self):
         """
         Test the model on test dataset.
         """
+        training_saved = self.training
         self.training = False
         self.log(f'[INFO] Testing... Epoch: {self.total_epochs} Iteration: {self.total_iters}')
+        test_start_time = time.time()
         self.model.eval()
 
         total_loss = 0.
-        total_metrics = {}
-        class_cnt = {cls: 0 for cls in self.test_classes}
-        class_cnt['mean'] = 0
+        total_metrics = None
+        pred_matching_list, ids_list, cls_list = [], [], []
         num_iter = 0
-        pbar_loader = tqdm(enumerate(self.test_loader, start=1), total=len(self.test_loader))
+        pbar_loader = tqdm(enumerate(self.test_loader, start=1), total=self.test_loader.__batch_len__())
         for batch_idx, (img, kpt, A, tgt, ids, cls) in pbar_loader:
-            pbar_loader.set_description(f'[TEST] [Epoch: {self.total_epochs} Iteration: {self.total_iters}]')
+            # fix batched list of strings
+            ids = np.array(ids).T
 
             # forward
-            pred, pred_matching, loss, metrics = self.test_one_batch(batch_idx, img, kpt, A, tgt, ids, cls)
+            pred, pred_matching, loss, metrics = self.test_one_batch(batch_idx, img, kpt, A, tgt)
 
             # track testing procedure
-            total_loss += loss
-            for c, metric in metrics.items():
-                class_cnt[c] += 1
-                for metric_name in metrics_list:
-                    if c not in total_metrics:
-                        total_metrics[c] = {}
-                    total_metrics[c][metric_name] = total_metrics[c].get(metric_name, 0.) + metric[metric_name]
-
+            total_loss += loss * img.shape[0]
+            if total_metrics is None:
+                total_metrics = {name: metric * img.shape[0] for name, metric in metrics.items()}
+            else:
+                for name, metric in metrics.items():
+                    total_metrics[name] += metric * img.shape[0]
+            pred_matching_list += [pred_matching]
+            ids_list += [ids]
+            cls_list += cls
             num_iter += img.shape[0]
 
             # print testing info
+            pbar_loader.set_description(f'[TEST] [Epoch: {self.total_epochs} Iteration: {self.total_iters}]')
             pbar_loader.set_postfix(
-                loss=loss,
-                **{f'{metric_name}': metrics['mean'][metric_name] for metric_name in metrics_list}
+                loss=total_loss / num_iter,
+                **{name: metric / num_iter for name, metric in total_metrics.items()}
             )
             if num_iter % self.opt.test_log_iter == 0:
                 self.log(
                     '[TEST] [Epoch: {} Iteration: {}] [{}/{} {:.0f}%] Loss: {:.6f} '.format(
                         self.total_epochs, self.total_iters,
                         num_iter, len(self.test_loader), 100. * num_iter / len(self.test_loader),
-                        loss,
+                        total_loss / num_iter,
                     ) +
-                    ''.join(
-                        [
-                            '{}: {:.6f} '.format(
-                                metric_name.capitalize(), metrics['mean'][metric_name]
-                            ) for metric_name in metrics_list
-                        ]
-                    )
+                    ''.join([f'{name.capitalize()}: {metric / num_iter:.6f} ' for name, metric in total_metrics.items()])
                 )
 
         # calculate mean metrics
         total_loss /= num_iter
-        total_metrics = {metric_name: total_metrics[metric_name] / class_cnt[metric_name] for metric_name in metrics_list}
+        total_metrics = {name: metric / num_iter for name, metric in total_metrics.items()}
+        pred_matching = np.concatenate(pred_matching_list, axis=0)
+        ids = np.concatenate(ids_list, axis=0)
+        cls = cls_list
+        metrics = self.eval(pred_matching, ids, cls)
 
         # track testing procedure
-        if self.opt.use_tensorboard:
+        if self.opt.use_tensorboard and self.writer is not None:
             self.writer.add_scalar('test/loss', total_loss, self.total_iters)
-            for metric_name in metrics_list:
-                for c, metric in total_metrics.items():
-                    scalar_tag = f'test/{metric_name}' if c == 'mean' else f'test/{c}/{metric_name}'
-                    self.writer.add_scalar(scalar_tag, metric[metric_name], self.total_iters)
+            for c, metric in metrics.items():
+                for name, m in metric.items():
+                    scalar_tag = f'test/{name}' if c == 'mean' else f'test/{c}/{name}'
+                    self.writer.add_scalar(scalar_tag, m, self.total_iters)
 
+        test_time = time.time() - test_start_time
         # print testing result
-        self.log(
-            '[TEST] [Epoch: {} Iteration: {}] Loss: {:.6f} '.format(
-                self.total_epochs, self.total_iters, total_loss
-            ) +
-            ''.join(
-                [
-                    '{}: {:.6f} '.format(
-                        metric_name.capitalize(), total_metrics['mean'][metric_name]
-                    ) for metric_name in metrics_list
-                ]
+        self.log('[TEST] [Epoch: {} Iteration: {} Time: {:.2f}s] Loss: {:.6f}'.format(
+                self.total_epochs, self.total_iters, test_time, total_loss
             )
         )
+        for c, metric in metrics.items():
+            if c != 'mean':
+                self.log(
+                    f'[TEST] [{c}]\t' +
+                    ''.join([f'{name.capitalize()}: {m:.6f} ' for name, m in metric.items()])
+                )
+        self.log(
+            '[TEST] [Mean]\t' +
+            ''.join([f'{name.capitalize()}: {m:.6f} ' for name, m in metrics['mean'].items()])
+        )
+
+        self.training = training_saved
 
     def eval(self, pred_matching, ids, cls):
         """
@@ -242,8 +256,8 @@ class Trainer:
 
         # evaluate
         # pick classes in cls
-        classes = [c for c in self.test_classes if c in cls]
-        metrics = self.test_benchmark.eval(pred, classes)
+        metrics = self.test_benchmark.eval(pred, set(cls))
+        self.test_benchmark.rm_gt_cache()
 
         return metrics
 
@@ -306,7 +320,10 @@ class Trainer:
 
         load_dir = os.path.join(self.opt.checkpoint, name, 'models')
         if not os.path.exists(load_dir):
-            if name == self.opt.name and iter_label == 'latest':
+            if self.opt.pretrain:
+                self.log(f'[INFO] No latest checkpoint found. Using the pretrained model directly.')
+                return
+            elif name == self.opt.name and iter_label == 'latest':
                 self.log(f'[INFO] No latest checkpoint found. Start training from scratch.')
                 return
             elif tolerance >= 3:
@@ -318,7 +335,10 @@ class Trainer:
         # load model and progress
         model_path = os.path.join(load_dir, f'{iter_label}.pkl')
         if not os.path.exists(model_path):
-            if name == self.opt.name and iter_label == 'latest':
+            if self.opt.pretrain:
+                self.log(f'[INFO] No latest checkpoint found. Using the pretrained model directly.')
+                return
+            elif name == self.opt.name and iter_label == 'latest':
                 self.log(f'[INFO] No latest model found. Start training from scratch.')
                 return
             elif tolerance >= 3:

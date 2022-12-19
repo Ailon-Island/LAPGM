@@ -66,9 +66,10 @@ def main():
         if opt.lr_scheduler == 'none':
             scheduler = DummyScheduler()
         elif opt.lr_scheduler == 'step':
-            scheduler = StepLR(optimizer, step_size=opt.epochs // 2, gamma=0.1)
+            scheduler = StepLR(optimizer, step_size=opt.lr_schedule_iter, gamma=opt.lr_schedule_gamma)
         elif opt.lr_scheduler == 'cosine':
-            scheduler = CosineAnnealingLR(optimizer, T_max=opt.epochs, eta_min=0.)
+            total_iters = min(opt.epochs * len(train_data), opt.max_iters)
+            scheduler = CosineAnnealingLR(optimizer, T_max=total_iters, eta_min=0.)
         else:
             raise NotImplementedError(f'Unknown learning rate scheduler: {opt.lr_scheduler}')
 
@@ -79,7 +80,8 @@ def main():
     if opt.train:
         trainer.train()
     else:
-        trainer.test()
+        for _ in range(10):
+            trainer.test()
 
 
 if __name__ == '__main__':

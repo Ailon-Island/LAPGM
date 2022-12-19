@@ -8,12 +8,14 @@ from utils import delaunay_triangulation
 class GMDataset(Dataset):
     def __init__(self, opt, benchmark):
         super(GMDataset, self).__init__()
+        self.opt = opt
         self.get_data = benchmark.get_data
         self.id_combination, self.total_len = benchmark.get_id_combination()
         self.num_classes = len(self.id_combination)
         self.class_len = [len(cmb) for cmb in self.id_combination]
         self.class_offset = [0] + list(np.cumsum(self.class_len))[:-1]
-        self.shuffle = opt.data_shuffle
+        self.train = benchmark.sets == 'train'
+        self.shuffle = opt.data_shuffle and self.train
         self.batch_size = opt.batch_size
 
         # set_attrs must be called to set batch size total len and shuffle like __len__ function in pytorch
@@ -30,7 +32,8 @@ class GMDataset(Dataset):
             None
         )
         id_combination = self.id_combination[class_idx][cmb_idx]
-        data_list, perm_mat_dict, _ = self.get_data(list(id_combination))
+        kpt_shuffle = self.opt.kpt_shuffle if self.train else self.opt.kpt_shuffle_test
+        data_list, perm_mat_dict, _ = self.get_data(list(id_combination), shuffle=kpt_shuffle)
 
         imgs, kpts = np.array([data['img'] for data in data_list], dtype=np.float32)/256, np.array([data['kpts'] for data in data_list])
         imgs = imgs.transpose(0, 3, 1, 2)
@@ -43,6 +46,9 @@ class GMDataset(Dataset):
         cls = data_list[0]['cls']
 
         return imgs, kpts, As, tgt, id_combination, cls
+
+
+
 
 
 
