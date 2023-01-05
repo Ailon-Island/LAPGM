@@ -19,7 +19,12 @@
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage{graphicx}
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=magenta,
+}
 \usepackage{listings}
 \usepackage{textcomp}
 \usepackage{multicol}
@@ -47,7 +52,7 @@ numbers=left }}
 \usepackage{gensymb}
 
 \pagestyle{fancy}
-\lhead{MiniProject 2: Image Classification, AI3607 Deep Learning and Its Application}
+\lhead{Project: LAPGM, AI3607 Deep Learning and Its Application}
 \chead{}
 \rhead{蒋伟, 520030910149}
 \lfoot{}
@@ -67,14 +72,152 @@ numbers=left }}
 
 \newenvironment{proof}{{\par\noindent\it Proof.}\quad\par}{\hfill $\square$\par}  
 
-\title{AI3607 Deep Learning and Its Application\\Project: LAPGM}
+\title{AI3607 Deep Learning and Its Application\\Project: \textbf{L}inear \textbf{A}ssignment \textbf{P}roblem Based \textbf{G}raph \textbf{M}atching}
 \author{\sffamily 蒋伟, F2003801, 520030910149}
 \date{(Dated: \today)}
 \begin{document}
+\maketitle
+
+\section{Introduction}
+Graph matching problem is a fundamental problem in deep learning. This combinational optimization problem aims to find node correspondences (and then naturally edge correspondences) among graphs, which frequently occur as the data structure in recommendation system, knowledge graph, and computer vision. Traditional methods integrate both node-wise similarity and edge-wise similarity to optimize node correspondences, leading to a quadratic assginment programming (QAP) problem which is hard to solve. 
+
+In this project, we will focus on some recently-proposed linear assignment problem (LAP) based graph matching algorithms, which only consider similarity at node level. To make full use of given information, these algorithms utilize powerful deep neural networks to fuse the graph structure and edge features all into node features, and then solve the graph matching problem as a linear assignment problem. With Sinkhorn \cite{sinkhorn} algorithm, the solving process is even differentiable, which makes it possible to train the whole graph matching pipeline end-to-end.
+
+In practice, we will implement a universal LAPGM model trainer compatible with PIA-GM, PCA-GM, IPCA-GM \cite{pca-ipca}, and CIE \cite{cie} based on Jittor \cite{jittor} and Pygmtools \cite{pygmtools}. 
+
+The whole project is available at \href{https://github.com/Ailon-Island/LAPGM}{\texttt{https://github.com/Ailon-Island/LAPGM}}.
+
+\section{Methods}
+
+\subsection{Image to Graph}
+In the project, we follow \cite{pca-ipca} and \cite{cie} to work in the setting of graph matching on image keypoints, where we need to first convert images with keypoints into featured graphs to be matched. To construct a graph, we perform Delaunay triangulation \cite{delaunay} on the keypoints. As for node features, we use keypoint descriptors $\mathbf{h}_{si}^{(0)}$ interpolated from CNN (VGG16 \cite{vgg} in implementation) feature map. Furthermore, there are various choices for edge features $\mathbf{e}_{sij}^{(0)}$ if necessary. For simplicity, we use the edge length as the edge feature. Note that it is also possible to use the edge angle or the descriptors from the connected nodes.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[PIA-GM and PCA-GM.]{\includegraphics[width=0.85\linewidth]{Images/pia-pca.pdf}}
+
+    \subfigure[IPCA-GM.]{\includegraphics[width=0.85\linewidth]{Images/ipca.pdf}}
+
+    \caption{Overview of methods proposed in \cite{pca-ipca}: PIA-GM, PCA-GM, and IPCA-GM. Pictures adopted from \cite{pca-ipca}.}
+\end{figure}
+
+\subsection{PIA-GM}
+\textbf{P}ermutation loss and \textbf{i}ntra-graph \textbf{a}ffinity based \textbf{g}raph \textbf{m}atching (PIA-GM) proposed in \cite{pca-ipca} is the first method to adopt deep graph networks to compress a graph into node feature vectors. And they are then able to for the first time introduce the Sinkhorn \cite{sinkhorn} based permutation loss to solve the graph matching problem.
+
+To be specific, PIA-GM first uses a graph embedding network to compress features around into each node. Then, the node feature vectors $\set{\mathbf{h}_{si}}$ are fed into an affinity network to obtain a node-wise affinity matrix $\mathbf{M}$. Next, Sinkhorn layer is used to convert the affinity matrix into a soft assignment in the form of a doubly-stochastic matrix $\mathbf{S}$. Finally, the permutation loss is applied to optimize the node correspondences. For final binary permutation matrix $\mathbf{X}$, we can perform Hungarian \cite{hungarian} algorithm on $\mathbf{S}$ as a final discretization step.
+
+\subsubsection{Intra-graph Node Embedding}
+The intra-graph node embedding procedure fuses structural information into nodes so as to obtain $\set{\mathbf{h}_{si}}$ from $\set{\mathbf{h}_{si}^{(0)}}$. This is also called graph convolution (GConv). We apply GConv several times for gradually global information aggregation. One GConv step is defined as follows:
+
+\begin{align}
+    \mathbf{m}_{si}^{(k)} &= \frac{1}{\left|(i,j) \in \mathcal{E}_s\right|} \sum_{j: (i,j) \in \mathcal{E}_s} f_{\mathrm{msg}}\left(\mathbf{h}_{si}^{(k-1)}\right)\\
+    \mathbf{n}_{si}^{(k)} &= f_{\mathrm{node}}\left( \mathbf{h}_{si}^{(k-1)} \right)\\
+    \mathbf{h}_{si}^{(k)} &= f_{\mathrm{update}}\left( \mathbf{m}_{si}^{(k)}, \mathbf{n}_{si}^{(k)} \right)
+\end{align}
+where $\mathcal{E}_s$ is the set of edges in $s$-th graph, $f_{\mathrm{msg}}$, $f_{\mathrm{node}}$, and $f_{\mathrm{update}}$ are the message passing function, the self-passing function, and the update function, respectively. 
+During the steps, $\mathbf{m}_{si}$ aggregates messages from neighbors of node $i$ and $\mathbf{n}_{si}$ processes the current node feature, then they are combined to update the node feature $\mathbf{h}_{si}$. 
+
+\subsubsection{Affinity Network}
+With all node features at hand, we need an affinity matrix $\mathbf{M}$ to describe node-to-node similarity between two graphs:
+$$
+\mathbf{M}_{ij} = f_{\mathrm{aff}}\left(\mathbf{h}_{1i}, \mathbf{h}_{2j}\right), \quad i\in \mathcal{V}_1, j\in \mathcal{V}_2
+$$
+where $f_{\mathrm{aff}}$ is the affinity score function, which is a weighted bi-linear function followed by an exponential function 
+$$
+f_{\mathrm{aff}}\left(\mathbf{h}_{1i}, \mathbf{h}_{2j} \right) = \exp\left(\frac{ \mathbf{h}_{1j}^\top \mathbf{K}  \mathbf{h}_{2j}}{\tau}\right)
+$$
+where $\mathbf{K}$ is the learnable weight, $\tau$ is the hyperparameter of temperature. for $\tau > 0$, with $\tau \rightarrow 0^+$, $f_{\mathrm{aff}}$ becomes more discriminative, while the chance of explosive gradient climbs.
+
+\subsubsection{Sinkhorn Layer}
+Sinkhorn \cite{sinkhorn} method is used as a relaxed approximation of Hungarian algorithm \cite{hungarian} for LAPs. It takes in any non-negative square matrix and outputs a doubly-stochastic matrix as prediction. The Sinkhorn operator is
+\begin{align}
+    \mathbf{M}'^{(k)} &=\mathbf{M}^{(k-1)} \oslash \left(\mathbf{M}^{(k-1)}\mathbf{1}\mathbf{1}^\top\right)\\
+    \mathbf{M}^{(k)} &=\mathbf{M}'^{(k)} \oslash \left(\mathbf{1}\mathbf{1}^\top\mathbf{M}'^{(k)}\right)\\
+\end{align}
+where $\oslash$ means element-wise division, and $\mathbf{1}$ is an all-one column vector. In other word, Sinkhorn algorithm alternately takes row-normalization and column-normalization till convergence. For two graphs with different numbers of nodes, we can pad with some isolated dummy nodes.
+
+With the doubly-stochastic prediction, it is natural to utilize cross-entropy loss as the objective, which is called "permutation" loss in \cite{pca-ipca}:
+$$
+\mathcal{L}_{\mathrm{CE}} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
+$$
+
+\subsection{PCA-GM}
+As is proposed in \cite{pca-ipca}, \textbf{p}ermutation loss and \textbf{c}ross-graph \textbf{a}ffinity based \textbf{g}raph \textbf{m}atching (PCA-GM) is an improvement from PIA-GM. It introduces cross-graph fusion to boost cross-graph similarity discovery. For node $\mathbf{h}_{1i}$ in the first graph, the new cross-graph node embedding procedure (CrossConv) is defined as follows:
+\begin{align}
+    \mathbf{m}_{1i}^{(k)} &= \sum_{j\in \mathcal{V}_2} \hat{\mathbf{S}}_{i,j} f_{\mathrm{msg-cross}}\left(\mathbf{h}_{2j}^{(k-1)}\right)\\
+    \mathbf{n}_{1i}^{(k)} &= f_{\mathrm{node-cross}}\left( \mathbf{h}_{1i}^{(k-1)} \right)\\
+    \mathbf{h}_{1i}^{(k)} &= f_{\mathrm{update-cross}}\left( \mathbf{m}_{1i}^{(k)}, \mathbf{n}_{1i}^{(k)} \right)
+\end{align}
+where the node-to-node similarity $\hat{\mathbf{S}}$ is the doubly-stochastic matrix predicted from $\set{\mathbf{h}_{si}^{(k-1)}}$ with the affinity followed by the Sinkhorn layer.
+
+\subsection{IPCA-GM}
+Note that PCA-GM gets a pre-result $\hat{\mathbf{S}}$ for cross-graph aggregation. Then the final result $\mathbf{S}$ can be interpreted as a refinement of $\hat{\mathbf{S}}$. So, it is natural to perform this refinement iteratively, which is the main idea of \textbf{i}terative \textbf{p}ermutation loss and \textbf{c}ross-graph \textbf{a}ffinity based \textbf{g}raph \textbf{m}atching (IPCA-GM) \cite{pca-ipca}. The iterative refinement procedure is to do GConv and CrossConv alternately. Note that $\hat{\mathbf{S}}$ is calculated at the end of each CrossConv, GConv pair rather than before each CrossConv, which means the very first CrossConv is a "GConv" with different parameters.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\linewidth]{Images/cie.pdf}
+    \caption{Overall architecture proposed in \cite{cie}, consisting of channel-independent embedding and Hungarian attention. Picture adopted from \cite{cie}.}
+\end{figure}
+\subsection{CIE}
+
+
+
+In all methods above, while structural features are perserved, edge attributes are neglected. \textbf{C}hannel-\textbf{I}ndependent \textbf{E}mbedding (CIE) \cite{cie} is then proposed to introduce edge attributes to LAPGM method. 
+
+Taking edge embeddings $\set{\mathbf{e}_{sij}}$ into account, the new GNN method updates both node and edge embeddings simultaneously:
+$$
+\set{\mathbf{h}_{si}^{(k)}}  = f\left(\set{\mathbf{h}_{si}^{(k-1)}}, \set{\mathbf{e}_{sij}^{(k-1)}}, \mathbf{A}\right), \quad \set{\mathbf{e}_{sij}^{(k)}}  = g\left(\set{\mathbf{h}_{si}^{(k-1)}}, \set{\mathbf{e}_{sij}^{(k-1)}}, \mathbf{A}\right)
+$$
+where $\mathbf{A}$ is the adjacency matrix.
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.6\linewidth]{Images/cie-detail.pdf}
+    \caption{Channel-independent embedding. Picture adopted from \cite{cie}.}
+\end{figure}
+
+\subsubsection{Channel-Independent Embedding}
+As is stated in \cite{cie}, the representation ability of staightforward edge-wise merging is limited. Furthermore, fully connected merging is costy and causes instability for back-propagation. \textbf{C}hannel-\textbf{I}ndependent \textbf{E}mbedding (CIE) is proposed to merge embeddings in a channel-wise fashion
+\begin{align}
+    \mathbf{h}_{si}^{(k)} &= \sigma\left(\sum_{j:(i,j)\in \mathcal{E}_s} \Gamma_N \left(f_{\mathrm{msg-edge}}\left(\mathbf{e}_{sij}^{(k-1)}\right)  \circ f_{\mathrm{msg-node}}\left(\mathbf{h}_{sj}^{(k-1)}\right) \right) + \sigma\left(f_{\mathrm{node}\left(\mathbf{h}_{si}^{(k-1)}\right)}\right) \right)   \\
+    \mathbf{e}_{sij}^{(k)} &= \sigma\left(\Gamma_E \left(f_{\mathrm{msg-edge}}\left(\mathbf{e}_{sij}^{(k-1)}\right)  \circ f_{\mathrm{msg-end}}\left(\mathbf{h}_{si}^{(k-1)}, \mathbf{h}_{sj}^{(k-1)}\right) \right) + \sigma\left(f_{\mathrm{msg-edge}\left(\mathbf{e}_{sij}^{(k-1)}\right)}\right) \right)  
+\end{align}
+where $\Gamma_N \left(\cdot \circ \cdot\right)$, $\Gamma_E \left(\cdot \circ \cdot\right)$ are channel-wise operators/functions, and $f_{\mathrm{msg-end}}(\cdot, \cdot)$ is commutative (for undirected graphs). Note that the cross-graph convolution step is still limited in node embeddings. It is also possible to extend the idea for edge embeddings, which require "affinity" values for every edge pair. What keeping us off is the significant computation demand. Here we again stress the "compressibility" of node embeddings for graphs.
+
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{Images/hungarian.pdf}
+    \caption{Hungarian attention. Picture adopted from \cite{cie}.}
+\end{figure}
+\subsubsection{Hungarian Attention}
+
+Cross-entropy loss prefers samples that are easy to learn in the early training stage and tends to perserve almost binary predictions (\cite{cie}). \cite{cie} proposed an improved attention mechanism to better back-propagation and have more unified training and testing interests (we used to train on continuous while test on discrete). They introduce a sparse attention mask as 
+$$
+\mathbf{Z} = \mathrm{Atten} \left(\mathbf{X}, \mathbf{X}^{\mathrm{gt}}\right)
+$$
+which is implemented as the union of output binary mask $\mathbf{X}$ and the ground-truth binary mask $\mathbf{X}^{\mathrm{gt}}$. The mask covers all points except for true negatives. They are trivial for optimization especially when we use Sinkhorn (or in other tasks, Softmax) to normalize the outputs. With Hungarian attention, the model is supposed to focus on the performance at ground truth matching and the digits that hinder the matching most. The Hungarian attention loss is defined as 
+$$
+\mathcal{H}_{CE} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \mathbf{Z}_{ij} \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
+$$
+
+
+\section{Experiments}
+We have done various experiments to compare the mentioned methods, to verify components, and to search for good hyperparameters. 
+
+\subsection{Dataset}
+We follow tutorials from Pygmtools \cite{pygmtools} to take WillowObject \cite{willow} as our main dataset. WillowObject is a dataset of images annotated with keypoints. There are altogether $5$ classes of images, face, motorbike, duck, car, and winebottle. For fear of overfitting, the train-test set split is conventional so that each class has a balanced number of instances in the train set, resulting in a test set much larger than the train one. 
+
+We also intend to perform some experiments on PascalVOC, but there was an exception from Jittor \cite{jittor} while switching dataset. 
+
+\section{Implementation and Feedbacks}
+
+\section{Acknowledgements}
 
 \cite{pca-ipca}, \cite{cie}, \cite{voc1}, \cite{voc2}, \cite{willow}, \cite{vgg}
 
-
+\newpage 
 \bibliographystyle{plain}
 \bibliography{reference}
 

@@ -111,7 +111,7 @@ class LAPGM(Module):
 
         # compute loss
         if tgt is not None:
-            if self.opt.hungarian_attention:
+            if self.hungarian_attention:
                 Z = (pred_matching + tgt).bool().float32()
                 pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred, tgt)

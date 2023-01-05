@@ -86,9 +86,10 @@ def main():
 if __name__ == '__main__':
     pygm.BACKEND = 'jittor'  # set Jittor as the default backend for pygmtools
     # jittor.cudnn.set_max_workspace_ratio(0.0)
-    jittor.flags.use_cuda = jittor.has_cuda
     # jittor.flags.no_fuse = True
     opt = Options().parse()  # parse options
+    jittor.flags.use_cuda = jittor.has_cuda if not opt.force_cpu else False
+    print(f'Using CUDA: {bool(jittor.flags.use_cuda)}')
     jittor.set_global_seed(opt.seed)  # set global random seed
 
     main()

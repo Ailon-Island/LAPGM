@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{voc2}
 L.~Bourdev and J.~Malik.
@@ -13,16 +13,44 @@ Minsu Cho, Karteek Alahari, and Jean Ponce.
 \newblock In {\em International Conference on Computer Vision}, pages 25--32,
   2013.
 
+\bibitem{delaunay}
+Boris Delaunay et~al.
+\newblock Sur la sphere vide.
+\newblock {\em Izv. Akad. Nauk SSSR, Otdelenie Matematicheskii i Estestvennyka
+  Nauk}, 7(793-800):1--2, 1934.
+
 \bibitem{voc1}
 Mark Everingham, Luc Van~Gool, Christopher~KI Williams, John Winn, and Andrew
   Zisserman.
 \newblock The pascal visual object classes (voc) challenge.
 \newblock {\em International Journal of Computer Vision}, 88:303–338, 2010.
 
+\bibitem{jittor}
+Shi-Min Hu, Dun Liang, Guo-Ye Yang, Guo-Wei Yang, and Wen-Yang Zhou.
+\newblock Jittor: a novel deep learning framework with meta-operators and
+  unified graph execution.
+\newblock {\em Science China Information Sciences}, 63(222103):1--21, 2020.
+
+\bibitem{hungarian}
+Harold~W Kuhn.
+\newblock The hungarian method for the assignment problem.
+\newblock {\em Naval research logistics quarterly}, 2(1-2):83--97, 1955.
+
 \bibitem{vgg}
 Karen Simonyan and Andrew Zisserman.
 \newblock Very deep convolutional networks for large-scale image recognition.
 \newblock {\em arXiv preprint arXiv:1409.1556}, 2014.
+
+\bibitem{sinkhorn}
+Richard Sinkhorn.
+\newblock A relationship between arbitrary positive matrices and doubly
+  stochastic matrices.
+\newblock {\em The annals of mathematical statistics}, 35(2):876--879, 1964.
+
+\bibitem{pygmtools}
+ThinkLab.
+\newblock Pygmtools.
+\newblock \url{https://github.com/Thinklab-SJTU/pygmtools}, 2022.
 
 \bibitem{pca-ipca}
 Runzhong Wang, Junchi Yan, and Xiaokang Yang.
