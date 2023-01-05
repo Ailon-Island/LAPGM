@@ -33,7 +33,7 @@ def scheduler_step(scheduler, steps=1):
 
 # calculating
 def delaunay_triangulation(kpt):
-    if kpt.shape[1] <= 3:
+    if kpt.shape[0] <= 3:
         A = np.ones((kpt.shape[0], kpt.shape[0])) - np.eye(kpt.shape[0])
         return A
 
