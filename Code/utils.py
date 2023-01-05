@@ -35,11 +35,11 @@ def scheduler_step(scheduler, steps=1):
 def delaunay_triangulation(kpt):
     print(f"kpt shape: {kpt.shape}")
     if kpt.shape[1] <= 3:
-        A = np.ones((kpt.shape[0], kpt.shape[0])) - np.eye(kpt.shape[0])
+        A = np.ones((kpt.shape[1], kpt.shape[1])) - np.eye(kpt.shape[1])
         return A
 
     d = spa.Delaunay(kpt.transpose())
-    A = np.zeros((len(kpt[0]), len(kpt[0])))
+    A = np.zeros((kpt.shape[1], kpt.shape[1]))
     for simplex in d.simplices:
         for pair in itertools.permutations(simplex, 2):
             A[pair] = 1
