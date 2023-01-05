@@ -10,6 +10,7 @@ class Options():
     def initialize(self):
         # Basic
         self.parser.add_argument('--name', type=str, default='trial', help='name of experiment')
+        self.parser.add_argument('--force_cpu', action='store_true', help='force to use cpu')
 
         # Data
         self.parser.add_argument('--dataset', type=str, default='WillowObject', help='dataset name')
