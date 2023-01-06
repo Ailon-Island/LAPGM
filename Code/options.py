@@ -25,6 +25,7 @@ class Options():
         # Model
         self.parser.add_argument('--model', type=str, default='pca-gm', help='matching method')
         self.parser.add_argument('--hungarian_attention', action='store_true', help='use hungarian attention')
+        self.parser.add_argument('--lambda_hungarian', type=float, default=0.0, help='hungarian attention hardness, 1. for hardest')
 
         # Training
         self.parser.add_argument('--train', type=bool, default=True, help='train or test')

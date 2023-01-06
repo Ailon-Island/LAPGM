@@ -63,7 +63,7 @@ class LAPGM(Module):
         self.opt = opt
         self.extractor = Extractor(vgg)
         self.gm_fn, self.gm_model, self.edge_feature = get_gm_model(opt.model, pretrain=self.opt.pretrain)
-        self.hungarian_attention = opt.hungarian_attention
+        self.lambda_hungarian = 0. if not opt.hungarian_attention else opt.lambda_hungarian
 
     def execute(self, img, kpt, A, tgt=None, extractor_train=False):
         """
@@ -111,8 +111,9 @@ class LAPGM(Module):
 
         # compute loss
         if tgt is not None:
-            if self.hungarian_attention:
+            if self.lambda_hungarian > 0:
                 Z = (pred_matching + tgt).bool().float32()
+                Z = jittor.clamp(Z + self.lambda_hungarian, 0., 1.)
                 pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred, tgt)
             return pred, pred_matching, loss
