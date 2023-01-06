@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex report"] 1672934126 "report.aux" "report.bbl" "report" 1672934153
+["bibtex report"] 1672986496 "report.aux" "report.bbl" "report" 1672986501
   "c:/texlive/2022/texmf-dist/bibtex/bst/base/plain.bst" 1659770035 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "reference.bib" 1672910821 2888 de3da74fab0ba033be9a907f10e7b83b ""
-  "report.aux" 1672934151 4601 f40713db5c1bae13eb737c6d52e6a5d3 "xelatex"
+  "reference.bib" 1672985884 4351 d0134ea5ea29e9da39564f52917e64ee ""
+  "report.aux" 1672986499 5856 3a12ff45f16f44bafe3b1c58fd1b12ab "xelatex"
   (generated)
   "report.bbl"
   "report.blg"
-["xdvipdfmx"] 1672934152 "report.xdv" "report.pdf" "report" 1672934153
-  "report.xdv" 1672934151 137936 71fd90de4ff17df225abda354d96fba5 "xelatex"
+["xdvipdfmx"] 1672986500 "report.xdv" "report.pdf" "report" 1672986501
+  "report.xdv" 1672986499 159116 824e1ec4fd1dbd2a7b3d8b80fb54afe0 "xelatex"
   (generated)
   "report.pdf"
-["xelatex"] 1672934149 "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" "report.xdv" "report" 1672934153
+["xelatex"] 1672986496 "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" "report.xdv" "report" 1672986501
   "Images/cie-detail.pdf" 1672915495 163989 77765943ba106c94bf9685aca4e8372c ""
   "Images/cie.pdf" 1672914944 61415 64a0f406ef8f1e37a407c709ea02937d ""
   "Images/hungarian.pdf" 1672915310 91830 875b01a3cf971f1a935fb00fc0f3bbf6 ""
@@ -180,6 +180,7 @@
   "c:/texlive/2022/texmf-dist/tex/latex/base/tuenc.def" 1659777397 26445 9ed4a9401f29cbb58ef6909cd5aec01f ""
   "c:/texlive/2022/texmf-dist/tex/latex/booktabs/booktabs.sty" 1659770315 6078 f1cb470c9199e7110a27851508ed7a5c ""
   "c:/texlive/2022/texmf-dist/tex/latex/circuitikz/circuitikz.sty" 1659771090 13737 2641155cd48b24914e097be915bc662d ""
+  "c:/texlive/2022/texmf-dist/tex/latex/cite/cite.sty" 1659771100 26218 19edeff8cdc2bcb704e8051dc55eb5a7 ""
   "c:/texlive/2022/texmf-dist/tex/latex/cjk/texinput/CJKfntef.sty" 1659771117 12851 25a9b5cc006609feb5c9a20ce24a5392 ""
   "c:/texlive/2022/texmf-dist/tex/latex/colortbl/colortbl.sty" 1659771534 12441 3b2a708337608012a865c7d9b7f05d28 ""
   "c:/texlive/2022/texmf-dist/tex/latex/ctex/config/ctex-name-utf8.cfg" 1659772168 1770 50e40a993c4c5ea72af9155aff7e605c ""
@@ -258,11 +259,11 @@
   "c:/texlive/2022/texmf-dist/web2c/texmf.cnf" 1659768082 40171 cdab547de63d26590bebb3baff566530 ""
   "c:/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt" 1659787679 5462351 acaca46334a40b157cea1d208aa08c6f ""
   "c:/texlive/2022/texmf.cnf" 1659787465 713 e69b156964470283e0530f5060668171 ""
-  "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" 1672934148 16216 940dcc2046a3fc0a13c3eea1737ada4e ""
-  "report.aux" 1672934151 4601 f40713db5c1bae13eb737c6d52e6a5d3 "xelatex"
-  "report.bbl" 1672934127 2325 0d85388ec68c71005c1e87faea980313 "bibtex report"
-  "report.out" 1672934151 2034 05a49ab60beae44f0a140dc9d43809f5 "xelatex"
-  "report.tex" 1672934148 16216 940dcc2046a3fc0a13c3eea1737ada4e ""
+  "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" 1672986491 17644 be3f13cc8f2fd21404afc5af628a8b23 ""
+  "report.aux" 1672986499 5856 3a12ff45f16f44bafe3b1c58fd1b12ab "xelatex"
+  "report.bbl" 1672986496 3215 71ddc9965378f80d5fa191a1e3bac733 "bibtex report"
+  "report.out" 1672986499 2939 613af7eb032912910bd573b8042a840c "xelatex"
+  "report.tex" 1672986491 17644 be3f13cc8f2fd21404afc5af628a8b23 ""
   (generated)
   "report.aux"
   "report.log"

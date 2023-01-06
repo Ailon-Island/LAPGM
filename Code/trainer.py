@@ -32,6 +32,13 @@ class Trainer:
             self.load(opt.resume_name, opt.resume_iter, opt.resume_model_only)
 
     def train_one_batch(self, batch_idx, img, kpt, A, tgt):
+        # for fear of empty graph
+        if kpt.shape[-1] == 0:
+            self.total_iters += img.shape[0]
+            metrics = cal_metrics(tgt, tgt)
+            metrics = {name: 1. for name in metrics}
+            return tgt.numpy(), tgt.numpy(), 0., metrics
+
         pred, pred_matching, loss = self.model(img, kpt, A, tgt, extractor_train=self.opt.extractor_train)
         self.optimizer.backward(loss)
         self.optimizer.step()

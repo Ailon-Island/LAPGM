@@ -19,6 +19,7 @@
 \usepackage{algorithmicx}
 \usepackage{algpseudocode}
 \usepackage{graphicx}
+\usepackage{cite}
 \usepackage{hyperref}
 \hypersetup{
     colorlinks=true,
@@ -209,9 +210,43 @@ We have done various experiments to compare the mentioned methods, to verify com
 \subsection{Dataset}
 We follow tutorials from Pygmtools \cite{pygmtools} to take WillowObject \cite{willow} as our main dataset. WillowObject is a dataset of images annotated with keypoints. There are altogether $5$ classes of images, face, motorbike, duck, car, and winebottle. For fear of overfitting, the train-test set split is conventional so that each class has a balanced number of instances in the train set, resulting in a test set much larger than the train one. 
 
-We also intend to perform some experiments on PascalVOC, but there was an exception from Jittor \cite{jittor} while switching dataset. 
+\subsection{Methods Comparison}
+We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hungarian attention loss (i.e., CIE-H). In Table \ref{tab:compare}, we report their performance on WillowObject.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{ccccccccc}
+        \toprule
+        Method& \\
+        \midrule
+        PCA-GM& \\
+        PCA-GM-H& \\
+        IPCA-GM& \\
+        IPCA-GM-H& \\
+        CIE& \\
+        CIE-H& \\
+        \bottomrule
+    \end{tabular}
+    \caption{Test accuracies of different methods on WillowObject dataset.}
+    \label{tab:compare}
+\end{table}
+
+\subsection{Ablation Experiments}
+
+\subsection{Hyperparameter Search}
+
+
 
 \section{Implementation and Feedbacks}
+
+\subsection{Trainer}
+
+\subsection{Dataset}
+\subsubsection{WillowObject}
+With \texttt{benchmark} class from Pygmtools \cite{pygmtools}, we easily integrated the data loading, processing, and result evaluating. For better compatibility, we have implemented Delaunay triangulation with both SciPy \cite{scipy} and OpenCV \cite{opencv}. Furthermore, since \texttt{benchmark} shuffles the order of keypoints each time loading data, we adviced that the cached ground truth should be refreshed at each shuffle for coherence, which has been adopted in newer versions of Pygmtools. 
+
+\subsubsection{PascalVOC}
+We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported while switching dataset. Even during our compatibility test on CPU, errors occur one after another.
 
 \section{Acknowledgements}
 

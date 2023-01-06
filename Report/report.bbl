@@ -7,6 +7,11 @@ L.~Bourdev and J.~Malik.
 \newblock In {\em International Conference on Computer Vision}, pages
   1365--1372. IEEE, 2009.
 
+\bibitem{opencv}
+G.~Bradski.
+\newblock {The OpenCV Library}.
+\newblock {\em Dr. Dobb's Journal of Software Tools}, 2000.
+
 \bibitem{willow}
 Minsu Cho, Karteek Alahari, and Jean Ponce.
 \newblock Learning graphs to match.
@@ -51,6 +56,19 @@ Richard Sinkhorn.
 ThinkLab.
 \newblock Pygmtools.
 \newblock \url{https://github.com/Thinklab-SJTU/pygmtools}, 2022.
+
+\bibitem{scipy}
+Pauli Virtanen, Ralf Gommers, Travis~E. Oliphant, Matt Haberland, Tyler Reddy,
+  David Cournapeau, Evgeni Burovski, Pearu Peterson, Warren Weckesser, Jonathan
+  Bright, St{\'e}fan~J. {van der Walt}, Matthew Brett, Joshua Wilson, K.~Jarrod
+  Millman, Nikolay Mayorov, Andrew R.~J. Nelson, Eric Jones, Robert Kern, Eric
+  Larson, C~J Carey, {\.I}lhan Polat, Yu~Feng, Eric~W. Moore, Jake
+  {VanderPlas}, Denis Laxalde, Josef Perktold, Robert Cimrman, Ian Henriksen,
+  E.~A. Quintero, Charles~R. Harris, Anne~M. Archibald, Ant{\^o}nio~H. Ribeiro,
+  Fabian Pedregosa, Paul {van Mulbregt}, and {SciPy 1.0 Contributors}.
+\newblock {{SciPy} 1.0: Fundamental Algorithms for Scientific Computing in
+  Python}.
+\newblock {\em Nature Methods}, 17:261--272, 2020.
 
 \bibitem{pca-ipca}
 Runzhong Wang, Junchi Yan, and Xiaokang Yang.
