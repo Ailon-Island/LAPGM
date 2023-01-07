@@ -1290,16 +1290,6 @@ INPUT report.aux
 INPUT report.aux
 OUTPUT report.aux
 INPUT c:/texlive/2022/texmf-dist/tex/latex/graphics/color.sty
-INPUT ./report.out
-INPUT report.out
-INPUT ./report.out
-INPUT report.out
-INPUT ./report.out
-INPUT report.out
-INPUT ./report.out
-INPUT report.out
-INPUT ./report.out
-INPUT ./report.out
 OUTPUT report.out
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm
 INPUT c:/texlive/2022/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm
@@ -1379,10 +1369,6 @@ INPUT Images/cie-detail.pdf
 INPUT ./Images/hungarian.pdf
 INPUT ./Images/hungarian.pdf
 INPUT Images/hungarian.pdf
-INPUT ./report.bbl
-INPUT report.bbl
-INPUT ./report.bbl
-INPUT report.bbl
 INPUT report.aux
 INPUT ./report.out
 INPUT ./report.out

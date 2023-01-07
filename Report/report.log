@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.8.6)  7 JAN 2023 16:58
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.8.6)  7 JAN 2023 19:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1038,9 +1038,11 @@ LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring ON on input line 79.
-(./report.out) (./report.out)
 \@outlinefile=\write4
 \openout4 = `report.out'.
+
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
 
 \c@lstlisting=\count386
 \symgns@font=\mathgroup10
@@ -1054,7 +1056,7 @@ LaTeX Info: Redefining \ohm on input line 79.
 Package gensymb Info: Using \textohm for \ohm on input line 79.
 Package gensymb Info: Using \textmu for \micro on input line 79.
 LaTeX Font Info:    Trying to load font information for U+msa on input line 81.
- (c:/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
+(c:/texlive/2022/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 81.
@@ -1095,6 +1097,21 @@ Package fontspec Info: Font family 'MicrosoftYaHei(0)' created for font
 (fontspec)             - 'bold italic small caps'  (b/scit) with NFSS spec.: 
 
 
+LaTeX Warning: Citation `sinkhorn' on page 1 undefined on input line 85.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 87.
+
+
+LaTeX Warning: Citation `cie' on page 1 undefined on input line 87.
+
+
+LaTeX Warning: Citation `jittor' on page 1 undefined on input line 87.
+
+
+LaTeX Warning: Citation `pygmtools' on page 1 undefined on input line 87.
+
+
 Package fontspec Info: Could not resolve font "FangSong/BI" (it probably
 (fontspec)             doesn't exist).
 
@@ -1117,34 +1134,234 @@ Package fontspec Info: Font family 'FangSong(0)' created for font 'FangSong'
 (fontspec)             <->"FangSong/OT:script=hani;language=dflt;"
 (fontspec)             - 'small caps'  (m/sc) with NFSS spec.: 
 
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 94.
+
+
+LaTeX Warning: Citation `cie' on page 1 undefined on input line 94.
+
+
+LaTeX Warning: Citation `delaunay' on page 1 undefined on input line 94.
+
+
+LaTeX Warning: Citation `vgg' on page 1 undefined on input line 94.
+
 File: Images/pia-pca.pdf Graphic file (type pdf)
 <use Images/pia-pca.pdf>
 File: Images/ipca.pdf Graphic file (type pdf)
 <use Images/ipca.pdf>
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 102.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 102.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 102.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 102.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 1 undefined on input line 106.
+
+
+LaTeX Warning: Citation `sinkhorn' on page 1 undefined on input line 106.
+
+
+LaTeX Warning: Citation `hungarian' on page 1 undefined on input line 108.
+
 [1
 
-] [2] [3]
+] [2]
+
+LaTeX Warning: Citation `sinkhorn' on page 3 undefined on input line 133.
+
+
+LaTeX Warning: Citation `hungarian' on page 3 undefined on input line 133.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 3 undefined on input line 140.
+
+
+LaTeX Warning: Citation `pca-ipca' on page 3 undefined on input line 146.
+
+[3]
+
+LaTeX Warning: Citation `pca-ipca' on page 4 undefined on input line 155.
+
 File: Images/cie.pdf Graphic file (type pdf)
 <use Images/cie.pdf>
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 160.
+
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 160.
+
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 160.
+
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 160.
+
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 166.
+
 File: Images/cie-detail.pdf Graphic file (type pdf)
 <use Images/cie-detail.pdf>
- [4]
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 178.
+
+
+LaTeX Warning: Citation `cie' on page 4 undefined on input line 182.
+
+[4]
 File: Images/hungarian.pdf Graphic file (type pdf)
 <use Images/hungarian.pdf>
- [5] [6] [7] (./report.bbl) [8] (./report.aux)
+
+
+LaTeX Warning: Citation `cie' on page 5 undefined on input line 193.
+
+
+LaTeX Warning: Citation `cie' on page 5 undefined on input line 196.
+
+
+LaTeX Warning: Citation `cie' on page 5 undefined on input line 196.
+
+[5]
+
+LaTeX Warning: Citation `pygmtools' on page 6 undefined on input line 215.
+
+
+LaTeX Warning: Citation `willow' on page 6 undefined on input line 215.
+
+
+LaTeX Warning: Reference `tab:compare' on page 6 undefined on input line 215.
+
+
+LaTeX Warning: Reference `tab:compare' on page 6 undefined on input line 218.
+
+
+LaTeX Warning: Citation `vgg' on page 6 undefined on input line 241.
+
+
+LaTeX Warning: Reference `tab:compare' on page 6 undefined on input line 241.
+
+
+LaTeX Warning: Reference `tab:compare' on page 6 undefined on input line 244.
+
+
+LaTeX Warning: Citation `cie' on page 6 undefined on input line 247.
+
+
+LaTeX Warning: Reference `tab:compare' on page 6 undefined on input line 247.
+
+
+LaTeX Warning: Reference `tab:hungarian' on page 6 undefined on input line 247.
+
+[6]
+
+LaTeX Warning: Citation `pygmtools' on page 7 undefined on input line 287.
+
+
+LaTeX Warning: Citation `scipy' on page 7 undefined on input line 287.
+
+
+LaTeX Warning: Citation `opencv' on page 7 undefined on input line 287.
+
+
+LaTeX Warning: Citation `voc1' on page 7 undefined on input line 290.
+
+
+LaTeX Warning: Citation `voc2' on page 7 undefined on input line 290.
+
+
+LaTeX Warning: Citation `jittor' on page 7 undefined on input line 290.
+
+d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex:290: Missing $ inserted.
+<inserted text> 
+                $
+l.290 ...upport, we rewrite \texttt{collate_batch}
+                                                   to make all shapes correct.
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex:290: Extra }, or forgotten $.
+<recently read> \egroup 
+                        
+l.290 ...upport, we rewrite \texttt{collate_batch}
+                                                   to make all shapes correct.
+I've deleted a group-closing symbol because it seems to be
+spurious, as in `$x}$'. But perhaps the } is legitimate and
+you forgot something else, as in `\hbox{$x}'. In such cases
+the way to recover is to insert both the forgotten and the
+deleted material, e.g., by typing `I$}'.
+
+d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex:291: Missing $ inserted.
+<inserted text> 
+                $
+l.291 
+      
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+
+Overfull \hbox (19.54482pt too wide) in paragraph at lines 289--291
+\TU/phv/m/n/10.53937 port for cases in which keypoints are less than $\OT1/cmr/m/n/10.53937 3$\TU/phv/m/n/10.53937 . For batch support, we rewrite \TU/lmtt/m/n/10.53937 collate$[]\OML/cmm/m/it/10.53937 atchtomakeallshapescorrect:$ 
+ []
+
+LaTeX Font Info:    Font shape `TU/lmtt/bx/n' in size <10.53937> not available
+(Font)              Font shape `TU/lmtt/b/n' tried instead on input line 294.
+
+LaTeX Warning: Citation `pca-ipca' on page 7 undefined on input line 294.
+
+
+LaTeX Warning: Citation `cie' on page 7 undefined on input line 294.
+
+
+LaTeX Warning: Citation `voc1' on page 7 undefined on input line 294.
+
+
+LaTeX Warning: Citation `voc2' on page 7 undefined on input line 294.
+
+
+LaTeX Warning: Citation `willow' on page 7 undefined on input line 294.
+
+
+LaTeX Warning: Citation `vgg' on page 7 undefined on input line 294.
+
+[7]
+No file report.bbl.
+(./report.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
-Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: FBA9AB9A2FDA59262E12DB3D81BB4C8E;1790.
- ) 
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `report.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report.out':
+(rerunfilecheck)             Before: <no file>
+(rerunfilecheck)             After:  FBA9AB9A2FDA59262E12DB3D81BB4C8E;1790.
+ )
+(\end occurred inside a group at level 1)
+
+### simple group (level 1) entered at line 290 ({)
+### bottom level 
 Here is how much of TeX's memory you used:
- 45300 strings out of 475865
- 1087663 string characters out of 5805585
- 1664981 words of memory out of 5000000
- 65681 multiletter control sequences out of 15000+600000
- 486819 words of font info for 127 fonts, out of 8000000 for 9000
+ 45271 strings out of 475865
+ 1086595 string characters out of 5805585
+ 1662144 words of memory out of 5000000
+ 65659 multiletter control sequences out of 15000+600000
+ 486811 words of font info for 126 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  89i,12n,97p,798b,496s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.xdv (8 pages, 189420 bytes).
+Output written on report.xdv (7 pages, 152076 bytes).

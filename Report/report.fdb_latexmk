@@ -1,16 +1,16 @@
 # Fdb version 3
-["bibtex report"] 1673081904 "report.aux" "report.bbl" "report" 1673081933
+["bibtex report"] 0 "report.aux" "report.bbl" "report" 0
   "c:/texlive/2022/texmf-dist/bibtex/bst/base/plain.bst" 1659770035 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "reference.bib" 1672985884 4351 d0134ea5ea29e9da39564f52917e64ee ""
-  "report.aux" 1673081931 5454 145d7036cb0c362a48b9639109f7814c "xelatex"
+  "report.aux" 0 -1 0 "xelatex"
   (generated)
   "report.bbl"
   "report.blg"
-["xdvipdfmx"] 1673081932 "report.xdv" "report.pdf" "report" 1673081933
-  "report.xdv" 1673081931 189420 7a9f2bf584ecaf33f50387ea9d572a13 "xelatex"
+["xdvipdfmx"] 0 "report.xdv" "report.pdf" "report" 0
+  "report.xdv" 0 -1 0 "xelatex"
   (generated)
   "report.pdf"
-["xelatex"] 1673081929 "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" "report.xdv" "report" 1673081933
+["xelatex"] 1673091168 "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" "report.xdv" "report" 1673091168
   "Images/cie-detail.pdf" 1672915495 163989 77765943ba106c94bf9685aca4e8372c ""
   "Images/cie.pdf" 1672914944 61415 64a0f406ef8f1e37a407c709ea02937d ""
   "Images/hungarian.pdf" 1672915310 91830 875b01a3cf971f1a935fb00fc0f3bbf6 ""
@@ -259,11 +259,11 @@
   "c:/texlive/2022/texmf-dist/web2c/texmf.cnf" 1659768082 40171 cdab547de63d26590bebb3baff566530 ""
   "c:/texlive/2022/texmf-var/web2c/xetex/xelatex.fmt" 1659787679 5462351 acaca46334a40b157cea1d208aa08c6f ""
   "c:/texlive/2022/texmf.cnf" 1659787465 713 e69b156964470283e0530f5060668171 ""
-  "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" 1673081928 22148 c37a269bf77708659f8e8c7bb5514436 ""
-  "report.aux" 1673081931 5454 145d7036cb0c362a48b9639109f7814c "xelatex"
-  "report.bbl" 1673081905 3215 71ddc9965378f80d5fa191a1e3bac733 "bibtex report"
-  "report.out" 1673081931 1790 fba9ab9a2fda59262e12db3d81bb4c8e "xelatex"
-  "report.tex" 1673081928 22148 c37a269bf77708659f8e8c7bb5514436 ""
+  "d:/LATEX/Homework/Undergraduate/Y3T1/Deep-Learning/大作业/Report/report.tex" 1673091163 22217 51cc0ac47be4d2bde5071963e44ca969 ""
+  "report.aux" 1673091168 34 3985256e7290058c681f74d7a3565a19 "xelatex"
+  "report.bbl" 0 -1 0 "bibtex report"
+  "report.out" 0 -1 0 "xelatex"
+  "report.tex" 1673091163 22217 51cc0ac47be4d2bde5071963e44ca969 ""
   (generated)
   "report.aux"
   "report.log"

@@ -287,7 +287,7 @@ For learning rate, several candidate values are tried at an early stage of the p
 With \texttt{benchmark} class from Pygmtools \cite{pygmtools}, we easily integrated the data loading, processing, and result evaluating. For better compatibility, we have implemented Delaunay triangulation with both SciPy \cite{scipy} and OpenCV \cite{opencv}. Furthermore, since \texttt{benchmark} shuffles the order of keypoints each time loading data, we adviced that the cached ground truth should be refreshed at each shuffle for coherence, which has been adopted in newer versions of Pygmtools. 
 
 \textbf{PascalVOC.}
-We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported while switching dataset. The script may work on CPU, but the dataset is too big to finish even a single epoch. Since numbers of keypoints varies in PascalVOC, we specially provide batch support based on padding and support for cases in which keypoints are less than $3$.
+We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported for a long period and the dataset itself is too big to do full experiments. Numbers of keypoints varies from instance to instance in PascalVOC. So we specially provide batch support based on padding and support for cases in which keypoints are less than $3$. For batch support, we rewrite \texttt{collate_batch} to make all shapes correct.
 
 \section{Acknowledgements}
 
