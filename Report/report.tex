@@ -215,7 +215,7 @@ We have done various experiments to compare the mentioned methods, to verify com
 We follow tutorials from Pygmtools \cite{pygmtools} to take WillowObject \cite{willow} as our main dataset. WillowObject is a dataset of images annotated with keypoints. There are altogether $5$ classes of images, winebottle, car, motorbike, duck, and face. As is shown in Table \ref{tab:compare}, face is the easiest class while duck is especially challenging. For fear of overfitting, the train-test set split is conventional so that each class has a balanced number of instances in the train set, resulting in a test set much larger than the train one. And to make up the inbalance of the test set, the overall mean accuracy is calcualted at the level of classes rather than instances.
 
 \subsection{Methods Comparison}
-We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hungarian attention loss (i.e., CIE-H). In Table \ref{tab:compare}, we report their performance on WillowObject.
+We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hungarian attention loss (i.e., CIE-H). In Table \ref{tab:compare}, we report their performance on WillowObject. Among all methods, CIE has the best performance. Despite more refinement steps, IPCA-GM does not beat PCA-GM, which may be caused by longer back-propagation paths.
 
 \begin{table}[htbp]
     \centering
@@ -223,11 +223,11 @@ We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hunga
         \toprule
         Method& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        PCA-GM-w/oFT&\\
+        PCA-GM-w/oFT& $89.32\%$& $86.47\%$& $91.26\%$& $86.32\%$& $99.92\%$& $90.66\%$\\
         PCA-GM& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $\mathbf{100.00\%}$& $93.99\%$\\
-        PCA-GM-H& \\
+        PCA-GM-H& $92.62\%$& $89.42\%$& $90.74\%$& $91.68\%$& $\mathbf{100.00\%}$& $92.89\%$\\
         IPCA-GM& $\mathbf{95.35\%}$& $90.32\%$& $91.05\%$& $87.03\%$& $99.97\%$&$92.74\%$ \\
-        IPCA-GM-H& \\
+        IPCA-GM-H& $93.19\%$& $88.00\%$& $90.79\%$& $85.24\%$& $99.91\%$& $91.43\%$\\
         CIE& $93.65\%$& $\mathbf{95.58\%}$& $\mathbf{95.53\%}$& $\mathbf{92.80\%}$& $99.17\%$& $\mathbf{95.34\%}$\\
         CIE-H& $90.39\%$& $91.05\%$& $94.95\%$& $88.21\%$& $99.93\%$& $92.90\%$\\
         \bottomrule
@@ -244,7 +244,7 @@ We use pretrained 2D convolutional backbone (VGG16 \cite{vgg}) for feature extra
 We also see PCA-GM as a variant of CIE with no edge embeddings. As is shown in Table \ref{tab:compare}, the edge embeddings significantly boost the performance of our LAPGM model, especially for objects with more rigid and templated structures, i.e., car and motorbike.
 
 \textbf{Hungarian attention.}
-Though is described to improve performance of all methods in \cite{cie}, Hungarian does not necessarily lead to better results in our experiments (see methods with and without -H in Table \ref{tab:compare}). We also dig deeper into soft Hungarian attention based on CIE. The results are reported in Table \ref{tab:hungarian}. Suprisingly, we find that the model learn easier classes (face) better with Hungarian attention, trading off performance on harder classes. 
+Though is described to improve performance of all methods in \cite{cie}, Hungarian does not necessarily lead to better results in our experiments (see methods with and without -H in Table \ref{tab:compare}). We also dig deeper into soft Hungarian attention based on CIE. The results are reported in Table \ref{tab:hungarian}. Suprisingly, we find that the model learn easier classes (face) better with Hungarian attention, trading off performance on harder classes. And it remains to be seen whether this phenomenon is restricted to WillowObject.
 
 \begin{table}[htbp]
     \centering

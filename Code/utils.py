@@ -92,6 +92,14 @@ def l2norm(node_feat):
     return local_response_norm(
         node_feat, node_feat.shape[1] * 2, alpha=node_feat.shape[1] * 2, beta=0.5, k=0)
 
+def cal_metrics(pred, gt):
+    with jittor.no_grad():
+        p = (pred * gt).sum(dims=[1, 2]) / pred.sum(dims=[1, 2])
+        r = (pred * gt).sum(dims=[1, 2]) / gt.sum(dims=[1, 2])
+        f1 = 2 * p * r / (p + r + 1e-8)
+
+    metrics = {'precision': p.mean().item(), 'recall': r.mean().item(), 'f1': f1.mean().item()}
+    return metrics
 
 # plotting
 def plot_image_with_graph(img, kpt, A=None, save_path=None):
@@ -104,16 +112,6 @@ def plot_image_with_graph(img, kpt, A=None, save_path=None):
     if save_path is not None:
         plt.savefig(save_path)
     plt.show()
-
-
-def cal_metrics(pred, gt):
-    with jittor.no_grad():
-        p = (pred * gt).sum(dims=[1, 2]) / pred.sum(dims=[1, 2])
-        r = (pred * gt).sum(dims=[1, 2]) / gt.sum(dims=[1, 2])
-        f1 = 2 * p * r / (p + r + 1e-8)
-
-    metrics = {'precision': p.mean().item(), 'recall': r.mean().item(), 'f1': f1.mean().item()}
-    return metrics
 
 
 def plot_training_procedure(train_losses=None, train_accs=None, test_losses=None, test_accs=None, iters=None, epochs=None, save_dir=None):

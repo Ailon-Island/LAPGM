@@ -48,6 +48,7 @@ class Trainer:
         self.optimizer.zero_grad()
         scheduler_step(self.lr_scheduler, batch_size)
 
+        assert pred_matching.shape == tgt.shape
         metrics = cal_metrics(pred_matching, tgt)
 
         self.total_iters += batch_size

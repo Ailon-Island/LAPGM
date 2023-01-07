@@ -1,7 +1,3 @@
-import os
-
-import numpy as np
-
 import jittor
 from jittor.nn import Module, interpolate
 from jittor.models import vgg16_bn
@@ -108,7 +104,7 @@ class LAPGM(Module):
             if self.edge_feature:
                 kpt_dis = kpt.unsqueeze(3) - kpt.unsqueeze(4)  # B, G, 2, N, N
                 kpt_dis = jittor.norm(kpt_dis, p=2, dim=2)  # B, G, N, N
-                Q = jittor.exp(-kpt_dis / imgs.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
+                Q = jittor.exp(-kpt_dis / img.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
 
         # match graphs
         pred, pred_matching = self.gm(node, A, Q, valid_mask)  # B, N, N
@@ -119,7 +115,7 @@ class LAPGM(Module):
                 Z = jittor.bitwise_or(pred_matching, tgt).float32()
                 Z = jittor.clamp(Z + self.lambda_hungarian, 0., 1.)
                 pred.register_hook(lambda grad: grad * Z)
-            loss = pygm.utils.permutation_loss(pred, tgt)
+            loss = pygm.utils.permutation_loss(pred[:, :tgt.shape[-2], :tgt.shape[-1]], tgt)
             return pred, pred_matching, loss
 
         return pred, pred_matching
