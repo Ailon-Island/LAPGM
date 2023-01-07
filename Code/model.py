@@ -111,11 +111,7 @@ class LAPGM(Module):
         # compute loss
         if tgt is not None:
             if self.lambda_hungarian > 0:
-<<<<<<< HEAD
-                Z = (pred_matching + tgt).float32()
-=======
                 Z = (pred_matching + tgt).bool().float32()
->>>>>>> parent of 4943138 (no report)
                 Z = jittor.clamp(Z + self.lambda_hungarian, 0., 1.)
                 pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred[:, :tgt.shape[-2], :tgt.shape[-1]], tgt)
@@ -141,6 +137,8 @@ class LAPGM(Module):
             pred_matching = pygm.hungarian(pred)
 
         return pred, pred_matching
+
+
 
 
 
