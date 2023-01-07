@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.8.6)  6 JAN 2023 14:28
+This is XeTeX, Version 3.141592653-2.6-0.999994 (TeX Live 2022) (preloaded format=xelatex 2022.8.6)  7 JAN 2023 15:35
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1136,15 +1136,15 @@ File: Images/hungarian.pdf Graphic file (type pdf)
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 613AF7EB032912910BD573B8042A840C;2939.
+(rerunfilecheck)             Checksum: 9B22CC6627511D1EC8DF3D0AA1591539;3133.
  ) 
 Here is how much of TeX's memory you used:
  45302 strings out of 475865
  1087696 string characters out of 5805585
- 1664979 words of memory out of 5000000
+ 1665179 words of memory out of 5000000
  65683 multiletter control sequences out of 15000+600000
  486819 words of font info for 127 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  89i,12n,97p,798b,496s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.xdv (8 pages, 159116 bytes).
+Output written on report.xdv (8 pages, 166844 bytes).

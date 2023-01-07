@@ -200,9 +200,15 @@ $$
 $$
 which is implemented as the union of output binary mask $\mathbf{X}$ and the ground-truth binary mask $\mathbf{X}^{\mathrm{gt}}$. The mask covers all points except for true negatives. They are trivial for optimization especially when we use Sinkhorn (or in other tasks, Softmax) to normalize the outputs. With Hungarian attention, the model is supposed to focus on the performance at ground truth matching and the digits that hinder the matching most. The Hungarian attention loss is defined as 
 $$
-\mathcal{H}_{CE} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \mathbf{Z}_{ij} \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
+\mathcal{H}_{\mathrm{CE}} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \mathbf{Z}_{ij} \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
 $$
 
+\subsubsection{Soft Hungarian Attention}
+From our observation, the Hungarian attention loss does not improve performance every time. We suspect that the Hungarian attention loss is too strong to be used in the early training stage. The hard attention mechanism makes predictions noisy with submaximums. We thus propose a soft version of Hungarian attention loss, which depress loss from the wide true negatives up to a weight $\lambda_{\mathrm{H}}$. It is defined as
+$$
+\mathcal{H}_{\mathrm{CE}}^\mathrm{S} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \left(\mathbf{Z}_{ij} + \lambda_{\mathrm{H}} \sim \mathbf{Z}_{ij}\right) \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
+$$
+where $\sim$ is the bitwise NOT operator. Though formulated from totally different aspect, the soft Hungarian attention loss is computationally equivalent to a weighted sum of the original cross-entropy loss and Hungarian attention loss.
 
 \section{Experiments}
 We have done various experiments to compare the mentioned methods, to verify components, and to search for good hyperparameters. 
@@ -219,6 +225,7 @@ We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hunga
         \toprule
         Method& \\
         \midrule
+        PCA-GM-w/oFT& \\
         PCA-GM& \\
         PCA-GM-H& \\
         IPCA-GM& \\
