@@ -112,7 +112,7 @@ class LAPGM(Module):
         # compute loss
         if tgt is not None:
             if self.lambda_hungarian > 0:
-                Z = jittor.bitwise_or(pred_matching, tgt).float32()
+                Z = (pred_matching + tgt).float32()
                 Z = jittor.clamp(Z + self.lambda_hungarian, 0., 1.)
                 pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred[:, :tgt.shape[-2], :tgt.shape[-1]], tgt)
