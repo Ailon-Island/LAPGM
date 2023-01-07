@@ -69,13 +69,14 @@ class LAPGM(Module):
             'kpts': keypoints, shape (B, G, 2, N)
             'As': adjacency matrices, shape (B, G, N, N)
             'tgt': target matching, shape (B, N, N) (optional)
+            'valid_mask': valid mask for padding, shape (B, N, N) (optional)
         :param extractor_train: whether to train the extractor
         :return:
             pred: predicted soft matching, shape (B, N, N)
             pred_matching: predicted matching, shape (B, N, N)
             loss: loss
         """
-        img, kpt, A, tgt = inputs['imgs'], inputs['kpts'], inputs['As'], inputs.get('tgt', None)
+        img, kpt, A, tgt, valid_mask = inputs['imgs'], inputs['kpts'], inputs['As'], inputs.get('tgt', None), inputs.get('valid_mask', None)
 
         # select scope up to extractor training mode
         if self.is_training() and extractor_train:
@@ -106,12 +107,12 @@ class LAPGM(Module):
                 Q = jittor.exp(-kpt_dis / img.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
 
         # match graphs
-        pred, pred_matching = self.gm(node, A, Q)  # B, N, N
+        pred, pred_matching = self.gm(node, A, Q, valid_mask)  # B, N, N
 
         # compute loss
         if tgt is not None:
             if self.lambda_hungarian > 0:
-                Z = (pred_matching + tgt).bool().float32()
+                Z = jittor.bitwise_or(pred_matching, tgt).float32()
                 Z = jittor.clamp(Z + self.lambda_hungarian, 0., 1.)
                 pred.register_hook(lambda grad: grad * Z)
             loss = pygm.utils.permutation_loss(pred[:, :tgt.shape[-2], :tgt.shape[-1]], tgt)
@@ -119,12 +120,13 @@ class LAPGM(Module):
 
         return pred, pred_matching
 
-    def gm(self, node, A, Q):
+    def gm(self, node, A, Q, valid_mask):
         """
         Match two graphs
         :param node: node features of the two graphs, shape (B, G, N, F)
         :param A: adjacency matrices of the two graphs, shape (B, G, N, N)
         :param Q: edge features of the two graphs, shape (B, G, N, N, 1)
+        :param valid_mask: valid mask for padding, shape (B, N, N)
         :return:
             pred: predicted soft matching, shape (B, N, N)
             pred_matching: predicted matching, shape (B, N, N)
@@ -133,8 +135,14 @@ class LAPGM(Module):
             pred = self.gm_fn(node[:, 0], node[:, 1], A[:, 0], A[:, 1], Q[:, 0], Q[:, 1], network=self.gm_model)
         else:
             pred = self.gm_fn(node[:, 0], node[:, 1], A[:, 0], A[:, 1], network=self.gm_model)
+
+        if valid_mask is not None:
+            pred[valid_mask == False] = 0.
+
         with jittor.no_grad():
             pred_matching = pygm.hungarian(pred)
+            if valid_mask is not None:
+                pred_matching[valid_mask == False] = 0.
 
         return pred, pred_matching
 

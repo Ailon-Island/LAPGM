@@ -201,7 +201,12 @@ class Trainer:
             else:
                 for name, metric in metrics.items():
                     total_metrics[name] += metric * batch_size
-            pred_matching_list += [pred_matching]
+
+            # reshape to target shape
+            valid_mask = batch['valid_mask'].numpy()
+            valid_shape = np.array([[*valid_mask[:, 0, :].sum(axis=-1)],
+                                    [*valid_mask[:, :, 0].sum(axis=-1)]]).T
+            pred_matching_list += [p[:s[0], :s[1]] for p, s in zip(pred_matching, valid_shape)]
             ids_list += [batch['ids']]
             cls_list += batch['cls']
             num_iter += batch_size
@@ -225,7 +230,7 @@ class Trainer:
         # calculate mean metrics
         total_loss /= num_iter
         total_metrics = {name: metric / num_iter for name, metric in total_metrics.items()}
-        pred_matching = np.concatenate(pred_matching_list, axis=0)
+        pred_matching = pred_matching_list
         ids = np.concatenate(ids_list, axis=0)
         cls = cls_list
         metrics = self.eval(pred_matching, ids, cls)
