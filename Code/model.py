@@ -65,19 +65,22 @@ class LAPGM(Module):
         self.gm_fn, self.gm_model, self.edge_feature = get_gm_model(opt.model, pretrain=self.opt.pretrain)
         self.lambda_hungarian = 0. if not opt.hungarian_attention else opt.lambda_hungarian
 
-    def execute(self, img, kpt, A, tgt=None, extractor_train=False):
+    def execute(self, inputs, extractor_train=False):
         """
         Forward pass
-        :param img: images, shape (B, G, C, H, W)
-        :param kpt: keypoints, shape (B, G, 2, N)
-        :param A: adjacency matrices, shape (B, N, N)
-        :param tgt: target matching, shape (B, N, N)
+        :param inputs: dict of inputs
+            'imgs': images, shape (B, G, C, H, W)
+            'kpts': keypoints, shape (B, G, 2, N)
+            'As': adjacency matrices, shape (B, G, N, N)
+            'tgt': target matching, shape (B, N, N) (optional)
         :param extractor_train: whether to train the extractor
         :return:
             pred: predicted soft matching, shape (B, N, N)
             pred_matching: predicted matching, shape (B, N, N)
             loss: loss
         """
+        img, kpt, A, tgt = inputs['imgs'], inputs['kpts'], inputs['As'], inputs.get('tgt', None)
+
         # select scope up to extractor training mode
         if self.is_training() and extractor_train:
             self.extractor.train()
@@ -104,7 +107,7 @@ class LAPGM(Module):
             if self.edge_feature:
                 kpt_dis = kpt.unsqueeze(3) - kpt.unsqueeze(4)  # B, G, 2, N, N
                 kpt_dis = jittor.norm(kpt_dis, p=2, dim=2)  # B, G, N, N
-                Q = jittor.exp(-kpt_dis / img.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
+                Q = jittor.exp(-kpt_dis / imgs.shape[-1]).unsqueeze(-1).float32()  # B, G, N, N, 1
 
         # match graphs
         pred, pred_matching = self.gm(node, A, Q)  # B, N, N

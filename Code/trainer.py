@@ -31,23 +31,26 @@ class Trainer:
         if opt.resume:
             self.load(opt.resume_name, opt.resume_iter, opt.resume_model_only)
 
-    def train_one_batch(self, batch_idx, img, kpt, A, tgt):
+    def train_one_batch(self, batch_idx, batch):
+        tgt = batch['tgt']
+        batch_size = len(tgt)
+
         # for fear of empty graph
-        if kpt.shape[-1] == 0:
-            self.total_iters += img.shape[0]
+        if batch['kpts'].shape[-1] == 0:
+            self.total_iters += batch_size
             metrics = cal_metrics(tgt, tgt)
             metrics = {name: 1. for name in metrics}
             return tgt.numpy(), tgt.numpy(), 0., metrics
 
-        pred, pred_matching, loss = self.model(img, kpt, A, tgt, extractor_train=self.opt.extractor_train)
+        pred, pred_matching, loss = self.model(batch, extractor_train=self.opt.extractor_train)
         self.optimizer.backward(loss)
         self.optimizer.step()
         self.optimizer.zero_grad()
-        scheduler_step(self.lr_scheduler, img.shape[0])
+        scheduler_step(self.lr_scheduler, batch_size)
 
         metrics = cal_metrics(pred_matching, tgt)
 
-        self.total_iters += img.shape[0]
+        self.total_iters += batch_size
 
         return pred.numpy(), pred_matching.numpy(), loss.item(),  metrics
 
@@ -56,18 +59,20 @@ class Trainer:
 
         num_iter = 0
         pbar_loader = tqdm(enumerate(self.loader, start=1), total=self.loader.__batch_len__())
-        for batch_idx, (img, kpt, A, tgt, _, _) in pbar_loader:
+        for batch_idx, batch in pbar_loader:
             # skip batch/iterations if already trained
-            if num_iter + img.shape[0] <= self.epoch_iters:
+            batch_size = batch['imgs'].shape[0]
+            if num_iter + batch_size <= self.epoch_iters:
                 continue
             elif num_iter < self.epoch_iters:
                 trained_iters = self.epoch_iters - num_iter
-                img, kpt, A, tgt = img[trained_iters:], kpt[trained_iters:], A[trained_iters:], tgt[trained_iters:]
+                batch = {key: value[trained_iters:] for key, value in batch.items()}
+                # img, kpt, A, tgt = img[trained_iters:], kpt[trained_iters:], A[trained_iters:], tgt[trained_iters:]
 
-            pred, pred_matching, loss, metrics = self.train_one_batch(batch_idx, img, kpt, A, tgt)
+            pred, pred_matching, loss, metrics = self.train_one_batch(batch_idx, batch)
 
             # track training procedure
-            num_iter += img.shape[0]
+            num_iter += batch_size
             if self.opt.use_tensorboard:
                 self.writer.add_scalar('train/loss', loss, self.total_iters)
                 for name, metric in metrics.items():
@@ -103,11 +108,11 @@ class Trainer:
         # reset epoch_iters
         self.epoch_iters = 0
 
-    def test_one_batch(self, batch_idx, img, kpt, A, tgt):
+    def test_one_batch(self, batch_idx, batch):
         with jittor.no_grad():
-            pred, pred_matching, loss = self.model(img, kpt, A, tgt)
+            pred, pred_matching, loss = self.model(batch)
 
-        metrics = cal_metrics(pred_matching, tgt)
+        metrics = cal_metrics(pred_matching, batch['tgt'])
 
         return pred.numpy(), pred_matching.numpy(), loss.item(), metrics
 
@@ -157,7 +162,7 @@ class Trainer:
                 break
 
         # test final result
-        if self.total_epochs == 0 or self.total_epochs % self.opt.test_epoch != 0:
+        if self.total_epochs == 0 or self.opt.test_final_only or self.total_epochs % self.opt.test_epoch != 0:
             self.test()
 
         # save final training procedure
@@ -182,24 +187,23 @@ class Trainer:
         pred_matching_list, ids_list, cls_list = [], [], []
         num_iter = 0
         pbar_loader = tqdm(enumerate(self.test_loader, start=1), total=self.test_loader.__batch_len__())
-        for batch_idx, (img, kpt, A, tgt, ids, cls) in pbar_loader:
-            # fix batched list of strings
-            ids = np.array(ids).T
+        for batch_idx, batch in pbar_loader:
+            batch_size = batch['imgs'].shape[0]
 
             # forward
-            pred, pred_matching, loss, metrics = self.test_one_batch(batch_idx, img, kpt, A, tgt)
+            pred, pred_matching, loss, metrics = self.test_one_batch(batch_idx, batch)
 
             # track testing procedure
-            total_loss += loss * img.shape[0]
+            total_loss += loss * batch_size
             if total_metrics is None:
-                total_metrics = {name: metric * img.shape[0] for name, metric in metrics.items()}
+                total_metrics = {name: metric * batch_size for name, metric in metrics.items()}
             else:
                 for name, metric in metrics.items():
-                    total_metrics[name] += metric * img.shape[0]
+                    total_metrics[name] += metric * batch_size
             pred_matching_list += [pred_matching]
-            ids_list += [ids]
-            cls_list += cls
-            num_iter += img.shape[0]
+            ids_list += [batch['ids']]
+            cls_list += batch['cls']
+            num_iter += batch_size
 
             # print testing info
             pbar_loader.set_description(f'[TEST] [Epoch: {self.total_epochs} Iteration: {self.total_iters}]')

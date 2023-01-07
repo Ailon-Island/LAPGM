@@ -43,9 +43,7 @@
 \citation{hungarian}
 \citation{pca-ipca}
 \citation{pca-ipca}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Intra-graph Node Embedding}{3}{subsubsection.2.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Affinity Network}{3}{subsubsection.2.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.3}Sinkhorn Layer}{3}{subsubsection.2.2.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}PCA-GM}{3}{subsection.2.3}\protected@file@percent }
 \citation{pca-ipca}
 \citation{cie}
 \citation{cie}
@@ -54,28 +52,27 @@
 \citation{cie}
 \citation{cie}
 \citation{cie}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}PCA-GM}{4}{subsection.2.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.4}IPCA-GM}{4}{subsection.2.4}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Overall architecture proposed in \cite  {cie}, consisting of channel-independent embedding and Hungarian attention. Picture adopted from \cite  {cie}.}}{4}{figure.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.5}CIE}{4}{subsection.2.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.5.1}Channel-Independent Embedding}{4}{subsubsection.2.5.1}\protected@file@percent }
 \citation{cie}
 \citation{cie}
 \citation{cie}
 \@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Channel-independent embedding. Picture adopted from \cite  {cie}.}}{5}{figure.3}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Hungarian attention. Picture adopted from \cite  {cie}.}}{5}{figure.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.5.2}Hungarian Attention}{5}{subsubsection.2.5.2}\protected@file@percent }
 \citation{pygmtools}
 \citation{willow}
-\citation{pygmtools}
-\citation{scipy}
-\citation{opencv}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.5.3}Soft Hungarian Attention}{6}{subsubsection.2.5.3}\protected@file@percent }
+\citation{vgg}
+\citation{cie}
 \@writefile{toc}{\contentsline {section}{\numberline {3}Experiments}{6}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Dataset}{6}{subsection.3.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Methods Comparison}{6}{subsection.3.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Test accuracies of different methods on WillowObject dataset.}}{6}{table.1}\protected@file@percent }
-\newlabel{tab:compare}{{1}{6}{Test accuracies of different methods on WillowObject dataset}{table.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Test accuracies of different methods on WillowObject dataset. -w/oFT means the method freezes the pretrained backbone without finetuning, -H means Hungarian attention.}}{6}{table.1}\protected@file@percent }
+\newlabel{tab:compare}{{1}{6}{Test accuracies of different methods on WillowObject dataset. -w/oFT means the method freezes the pretrained backbone without finetuning, -H means Hungarian attention}{table.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Ablation Study}{6}{subsection.3.3}\protected@file@percent }
+\citation{pygmtools}
+\citation{scipy}
+\citation{opencv}
 \citation{voc1,voc2}
 \citation{jittor}
 \citation{pca-ipca}
@@ -84,13 +81,12 @@
 \citation{voc2}
 \citation{willow}
 \citation{vgg}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Ablation Experiments}{7}{subsection.3.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Test accuracies of different level of soft Hungarian attention based on CIE.}}{7}{table.2}\protected@file@percent }
+\newlabel{tab:hungarian}{{2}{7}{Test accuracies of different level of soft Hungarian attention based on CIE}{table.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Hyperparameter Search}{7}{subsection.3.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}Implementation and Feedbacks}{7}{section.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Trainer}{7}{subsection.4.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Dataset}{7}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}WillowObject}{7}{subsubsection.4.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}PascalVOC}{7}{subsubsection.4.2.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {5}Acknowledgements}{7}{section.5}\protected@file@percent }
 \bibstyle{plain}
 \bibdata{reference}

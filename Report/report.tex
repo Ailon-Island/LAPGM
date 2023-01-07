@@ -107,7 +107,7 @@ In the project, we follow \cite{pca-ipca} and \cite{cie} to work in the setting 
 
 To be specific, PIA-GM first uses a graph embedding network to compress features around into each node. Then, the node feature vectors $\set{\mathbf{h}_{si}}$ are fed into an affinity network to obtain a node-wise affinity matrix $\mathbf{M}$. Next, Sinkhorn layer is used to convert the affinity matrix into a soft assignment in the form of a doubly-stochastic matrix $\mathbf{S}$. Finally, the permutation loss is applied to optimize the node correspondences. For final binary permutation matrix $\mathbf{X}$, we can perform Hungarian \cite{hungarian} algorithm on $\mathbf{S}$ as a final discretization step.
 
-\subsubsection{Intra-graph Node Embedding}
+\textbf{Intra-graph node embedding.}
 The intra-graph node embedding procedure fuses structural information into nodes so as to obtain $\set{\mathbf{h}_{si}}$ from $\set{\mathbf{h}_{si}^{(0)}}$. This is also called graph convolution (GConv). We apply GConv several times for gradually global information aggregation. One GConv step is defined as follows:
 
 \begin{align}
@@ -118,7 +118,7 @@ The intra-graph node embedding procedure fuses structural information into nodes
 where $\mathcal{E}_s$ is the set of edges in $s$-th graph, $f_{\mathrm{msg}}$, $f_{\mathrm{node}}$, and $f_{\mathrm{update}}$ are the message passing function, the self-passing function, and the update function, respectively. 
 During the steps, $\mathbf{m}_{si}$ aggregates messages from neighbors of node $i$ and $\mathbf{n}_{si}$ processes the current node feature, then they are combined to update the node feature $\mathbf{h}_{si}$. 
 
-\subsubsection{Affinity Network}
+\textbf{Affinity network.}
 With all node features at hand, we need an affinity matrix $\mathbf{M}$ to describe node-to-node similarity between two graphs:
 $$
 \mathbf{M}_{ij} = f_{\mathrm{aff}}\left(\mathbf{h}_{1i}, \mathbf{h}_{2j}\right), \quad i\in \mathcal{V}_1, j\in \mathcal{V}_2
@@ -129,7 +129,7 @@ f_{\mathrm{aff}}\left(\mathbf{h}_{1i}, \mathbf{h}_{2j} \right) = \exp\left(\frac
 $$
 where $\mathbf{K}$ is the learnable weight, $\tau$ is the hyperparameter of temperature. for $\tau > 0$, with $\tau \rightarrow 0^+$, $f_{\mathrm{aff}}$ becomes more discriminative, while the chance of explosive gradient climbs.
 
-\subsubsection{Sinkhorn Layer}
+\textbf{Sinkhorn layer.}
 Sinkhorn \cite{sinkhorn} method is used as a relaxed approximation of Hungarian algorithm \cite{hungarian} for LAPs. It takes in any non-negative square matrix and outputs a doubly-stochastic matrix as prediction. The Sinkhorn operator is
 \begin{align}
     \mathbf{M}'^{(k)} &=\mathbf{M}^{(k-1)} \oslash \left(\mathbf{M}^{(k-1)}\mathbf{1}\mathbf{1}^\top\right)\\
@@ -178,7 +178,7 @@ where $\mathbf{A}$ is the adjacency matrix.
     \caption{Channel-independent embedding. Picture adopted from \cite{cie}.}
 \end{figure}
 
-\subsubsection{Channel-Independent Embedding}
+\textbf{Channel-Independent Embedding.}
 As is stated in \cite{cie}, the representation ability of staightforward edge-wise merging is limited. Furthermore, fully connected merging is costy and causes instability for back-propagation. \textbf{C}hannel-\textbf{I}ndependent \textbf{E}mbedding (CIE) is proposed to merge embeddings in a channel-wise fashion
 \begin{align}
     \mathbf{h}_{si}^{(k)} &= \sigma\left(\sum_{j:(i,j)\in \mathcal{E}_s} \Gamma_N \left(f_{\mathrm{msg-edge}}\left(\mathbf{e}_{sij}^{(k-1)}\right)  \circ f_{\mathrm{msg-node}}\left(\mathbf{h}_{sj}^{(k-1)}\right) \right) + \sigma\left(f_{\mathrm{node}\left(\mathbf{h}_{si}^{(k-1)}\right)}\right) \right)   \\
@@ -192,8 +192,7 @@ where $\Gamma_N \left(\cdot \circ \cdot\right)$, $\Gamma_E \left(\cdot \circ \cd
     \includegraphics[width=0.5\linewidth]{Images/hungarian.pdf}
     \caption{Hungarian attention. Picture adopted from \cite{cie}.}
 \end{figure}
-\subsubsection{Hungarian Attention}
-
+\textbf{Hungarian attention.}
 Cross-entropy loss prefers samples that are easy to learn in the early training stage and tends to perserve almost binary predictions (\cite{cie}). \cite{cie} proposed an improved attention mechanism to better back-propagation and have more unified training and testing interests (we used to train on continuous while test on discrete). They introduce a sparse attention mask as 
 $$
 \mathbf{Z} = \mathrm{Atten} \left(\mathbf{X}, \mathbf{X}^{\mathrm{gt}}\right)
@@ -203,8 +202,7 @@ $$
 \mathcal{H}_{\mathrm{CE}} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \mathbf{Z}_{ij} \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
 $$
 
-\subsubsection{Soft Hungarian Attention}
-From our observation, the Hungarian attention loss does not improve performance every time. We suspect that the Hungarian attention loss is too strong to be used in the early training stage. The hard attention mechanism makes predictions noisy with submaximums. We thus propose a soft version of Hungarian attention loss, which depress loss from the wide true negatives up to a weight $\lambda_{\mathrm{H}}$. It is defined as
+\textbf{Soft hungarian attention.} From our observation, the Hungarian attention loss does not improve performance every time. We suspect that the Hungarian attention loss is too strong to be used in the early training stage. The hard attention mechanism makes predictions noisy with submaximums. We thus propose a soft version of Hungarian attention loss, which depress loss from the wide true negatives up to a weight $\lambda_{\mathrm{H}}$. It is defined as
 $$
 \mathcal{H}_{\mathrm{CE}}^\mathrm{S} = -\sum_{i\in \mathcal{V}_1, j\in \mathcal{V}_2 } \left(\mathbf{Z}_{ij} + \lambda_{\mathrm{H}} \sim \mathbf{Z}_{ij}\right) \left(\mathbf{X}_{ij}^{\mathrm{gt}} \log\mathbf{S}_{ij} + \left(1-\mathbf{X}_{ij}^{\mathrm{gt}}\right) \log \left(1- \mathbf{S}_{ij}\right) \right)
 $$
@@ -214,33 +212,69 @@ where $\sim$ is the bitwise NOT operator. Though formulated from totally differe
 We have done various experiments to compare the mentioned methods, to verify components, and to search for good hyperparameters. 
 
 \subsection{Dataset}
-We follow tutorials from Pygmtools \cite{pygmtools} to take WillowObject \cite{willow} as our main dataset. WillowObject is a dataset of images annotated with keypoints. There are altogether $5$ classes of images, face, motorbike, duck, car, and winebottle. For fear of overfitting, the train-test set split is conventional so that each class has a balanced number of instances in the train set, resulting in a test set much larger than the train one. 
+We follow tutorials from Pygmtools \cite{pygmtools} to take WillowObject \cite{willow} as our main dataset. WillowObject is a dataset of images annotated with keypoints. There are altogether $5$ classes of images, winebottle, car, motorbike, duck, and face. As is shown in Table \ref{tab:compare}, face is the easiest class while duck is especially challenging. For fear of overfitting, the train-test set split is conventional so that each class has a balanced number of instances in the train set, resulting in a test set much larger than the train one. And to make up the inbalance of the test set, the overall mean accuracy is calcualted at the level of classes rather than instances.
 
 \subsection{Methods Comparison}
 We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hungarian attention loss (i.e., CIE-H). In Table \ref{tab:compare}, we report their performance on WillowObject.
 
 \begin{table}[htbp]
     \centering
-    \begin{tabular}{ccccccccc}
+    \begin{tabular}{lcccccc}
         \toprule
-        Method& \\
+        Method& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        PCA-GM-w/oFT& \\
-        PCA-GM& \\
+        PCA-GM-w/oFT&\\
+        PCA-GM& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $\mathbf{100.00\%}$& $93.99\%$\\
         PCA-GM-H& \\
-        IPCA-GM& \\
+        IPCA-GM& $\mathbf{95.35\%}$& $90.32\%$& $91.05\%$& $87.03\%$& $99.97\%$&$92.74\%$ \\
         IPCA-GM-H& \\
-        CIE& \\
-        CIE-H& \\
+        CIE& $93.65\%$& $\mathbf{95.58\%}$& $\mathbf{95.53\%}$& $\mathbf{92.80\%}$& $99.17\%$& $\mathbf{95.34\%}$\\
+        CIE-H& $90.39\%$& $91.05\%$& $94.95\%$& $88.21\%$& $99.93\%$& $92.90\%$\\
         \bottomrule
     \end{tabular}
-    \caption{Test accuracies of different methods on WillowObject dataset.}
+    \caption{Test accuracies of different methods on WillowObject dataset. -w/oFT means the method freezes the pretrained backbone without finetuning, -H means Hungarian attention.}
     \label{tab:compare}
 \end{table}
 
-\subsection{Ablation Experiments}
+\subsection{Ablation Study}
+\textbf{Backbone finetuning.}
+We use pretrained 2D convolutional backbone (VGG16 \cite{vgg}) for feature extraction. Then it is a natural question whether to further finetune the backbone while training the LAPGM model. In Table \ref{tab:compare} we see an overall performance gain with finetuing. So, LAPGM methods would benefit from finetuning learnable feature extractors in an end-to-end style.
+
+\textbf{Edge embeddings.} 
+We also see PCA-GM as a variant of CIE with no edge embeddings. As is shown in Table \ref{tab:compare}, the edge embeddings significantly boost the performance of our LAPGM model, especially for objects with more rigid and templated structures, i.e., car and motorbike.
+
+\textbf{Hungarian attention.}
+Though is described to improve performance of all methods in \cite{cie}, Hungarian does not necessarily lead to better results in our experiments (see methods with and without -H in Table \ref{tab:compare}). We also dig deeper into soft Hungarian attention based on CIE. The results are reported in Table \ref{tab:hungarian}. Suprisingly, we find that the model learn easier classes (face) better with Hungarian attention, trading off performance on harder classes. 
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lcccccc}
+        \toprule
+        $\lambda_{\mathrm{H}}$& Winebottle& Car& Motorbike& Duck& Face& Mean\\
+        \midrule
+        $0\quad (\mathcal{L}_{\mathrm{CE}})$&$93.65\%$& $\mathbf{95.58\%}$& $95.53\%$& $\mathbf{92.80\%}$& $99.17\%$& $\mathbf{95.34\%}$\\
+        $0.1$& $93.42\%$& $89.53\%$& $96.79\%$& $89.72\%$& $99.73\%$& $93.84\%$\\
+        $0.3$& $93.00\%$& $91.47\%$& $95.47\%$& $90.69\%$& $99.77\%$& $94.08\%$\\
+        $0.5$& $92.32\%$& $91.84\%$& $93.89\%$& $90.53\%$& $99.85\%$& $93.69\%$\\
+        $0.7$& $90.82\%$& $88.73\%$& $\mathbf{96.05\%}$& $90.76\%$& $99.68\%$& $93.21\%$\\
+        $0.9$& $\mathbf{94.56\%}$& $90.47\%$& $92.21\%$& $89.08\%$& $\mathbf{99.97\%}$& $93.26\%$\\
+        $1\quad (\mathcal{H}_{\mathrm{CE}})$& $90.39\%$& $91.05\%$& $94.95\%$& $88.21\%$& $99.93\%$& $92.90\%$\\
+        \bottomrule
+        
+    \end{tabular}
+    \caption{Test accuracies of different level of soft Hungarian attention based on CIE.}
+    \label{tab:hungarian}
+\end{table}
 
 \subsection{Hyperparameter Search}
+\textbf{Weight decay.}
+
+\textbf{Optimizer.}
+
+\textbf{Learning rate scheduler.}
+
+\textbf{More details.}
+For learning rate, several candidate values are tried at an early stage of the project. Since the performance is rather high and AdamW is not so sensitive to learning rate, a fixed value of $1e-4$ is finally picked for all experiments with no further tuning.
 
 
 
@@ -249,11 +283,11 @@ We conduct experiments on PCA-GM, IPCA-GM, CIE, and their combination with Hunga
 \subsection{Trainer}
 
 \subsection{Dataset}
-\subsubsection{WillowObject}
+\textbf{WillowObject.}
 With \texttt{benchmark} class from Pygmtools \cite{pygmtools}, we easily integrated the data loading, processing, and result evaluating. For better compatibility, we have implemented Delaunay triangulation with both SciPy \cite{scipy} and OpenCV \cite{opencv}. Furthermore, since \texttt{benchmark} shuffles the order of keypoints each time loading data, we adviced that the cached ground truth should be refreshed at each shuffle for coherence, which has been adopted in newer versions of Pygmtools. 
 
-\subsubsection{PascalVOC}
-We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported while switching dataset. Even during our compatibility test on CPU, errors occur one after another.
+\textbf{PascalVOC.}
+We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported while switching dataset. The script may work on CPU, but the dataset is too big to finish even a single epoch. Since numbers of keypoints varies in PascalVOC, we specially provide batch support based on padding and support for cases in which keypoints are less than $3$.
 
 \section{Acknowledgements}
 
