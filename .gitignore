@@ -4,3 +4,11 @@
 checkpoints
 data
 Report
+Report/report.aux
+Report/report.bbl
+Report/report.blg
+Report/report.fdb_latexmk
+Report/report.fls
+Report/report.log
+Report/report.synctex.gz
+Report/report.xdv
