@@ -1,0 +1,10 @@
+tqdm
+scipy
+opencv-python
+pillow
+tensorboardX
+matplotlib
+numpy
+torch
+jittor
+pygmtools

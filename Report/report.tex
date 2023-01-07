@@ -268,10 +268,61 @@ Though is described to improve performance of all methods in \cite{cie}, Hungari
 
 \subsection{Hyperparameter Search}
 \textbf{Weight decay.}
+Since the test accuracies are obviously worse than train accuracies, there should be some overfitting issues. To prevent overfitting, we choose to impose some regulations on the parameters so as to make the model simple and robust, which is called weight decay. From results shown in Table \ref{tab:weightdecay}, we conclude that with proper weight decay, the robustness grows while the model capacity does not fall much.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lcccccc}
+        \toprule
+        Weight Decay& Winebottle& Car& Motorbike& Duck& Face& Mean\\
+        \midrule
+        $0$&$94.74\%$& $93.58\%$& $95.26\%$& $90.09\%$& $100.00\%$& $94.74\%$\\
+        $1e-2$& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $100.00\%$& $93.99\%$\\
+        $5e-2$& $91.17\%$& $90.05\%$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
+        $1e-1$& $92.78\%$& $91.37\%$& $94.37\%$& $89.82\%$& $99.97\%$& $93.66\%$\\
+        \bottomrule
+        
+    \end{tabular}
+    \caption{Test accuracies of PCA-GM model with weight decay.}
+    \label{tab:weightdecay}
+\end{table}
 
 \textbf{Optimizer.}
+We have experimented with both AdamW and SGD optimizers. As the results shown in Table \ref{tab:optimizer}, AdamW stably optimize the model to a better minima than SGD. 
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lcccccc}
+        \toprule
+        Optimizer& Winebottle& Car& Motorbike& Duck& Face& Mean\\
+        \midrule
+        AdamW& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $100.00\%$& $93.99\%$\\
+        SGD& $91.17\%$& $90.05\%$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
+        \bottomrule
+        
+    \end{tabular}
+    \caption{Test accuracies of PCA-GM model with different optimizers.}
+    \label{tab:optimizer}
+\end{table}
 
 \textbf{Learning rate scheduler.}
+Several learning rate schedulers are tried. From Table \ref{tab:scheduler}, we find that different learning rate schedulers have similar performances in our task.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lcccccc}
+        \toprule
+        LR Scheduler& Winebottle& Car& Motorbike& Duck& Face& Mean\\
+        \midrule
+        None& $\textbf{89.52\%}$& $86.05\%$& $\textbf{92.58\%}$& $86.76\%$& $99.93\%$& $\textbf{90.97\%}$\\
+        StepLR& $88.85\%$& $86.32\%$& $91.79\%$& $85.15\%$& $\textbf{99.95\%}$& $90.41\%$\\
+        CosineAnnealing& $89.16\%$& $\textbf{87.68\%}$& $89.68\%$& $\textbf{87.40\%}$& $99.93\%$& $90.77\%$\\
+        \bottomrule
+        
+    \end{tabular}
+    \caption{Test accuracies of PCA-GM model with different learning rate schedulers.}
+    \label{tab:scheduler}
+\end{table}
 
 \textbf{More details.}
 For learning rate, several candidate values are tried at an early stage of the project. Since the performance is rather high and AdamW is not so sensitive to learning rate, a fixed value of $1e-4$ is finally picked for all experiments with no further tuning.
@@ -281,17 +332,37 @@ For learning rate, several candidate values are tried at an early stage of the p
 \section{Implementation and Feedbacks}
 
 \subsection{Trainer}
+We aim to create a trainer which is modular, robust, and visible. It shall work fine with LAPGM models from Pygmtools \cite{pygmtools}. Even more, users can migrate it to any other deep learning task (better with Jittor \cite{jittor}) painlessly.
+
+\textbf{Modularity.}
+For better reusability and customizability, we build the \texttt{Trainer} class in a rather modular way. We make every module quite replacable, including \texttt{model}, \texttt{optimizer}, \texttt{lr\_scheduler}, data loaders, benchmarks, and even per-batch task, per-epoch task, evaluation, etc.. For tidiness, we do not implement some functions as callable arguments, but they are also easy to substitute.
+
+\textbf{Robustness.}
+Our trainer is robust and automated. It would log in file the training and testing process and save checkpoints automatically. Besides the main model, all states including training progress can be fully recorded (up to the config) and automatically resumed. Users need not to worry about accidents during training.
+
+\textbf{Visibility.}
+The training process and all informations are printed in a human-friendly way. You can supervise the progress with ease. By the way, all training statics like loss and metrics are connected to TensorBoard \cite{tensorflow}, ready for investigating and further processing.
 
 \subsection{Dataset}
+The dataset is implemented based on \texttt{benchmark} class from Pygmtools \cite{pygmtools} and \texttt{Dataset} class from Jittor \cite{jittor}, with which data loading and preprocessing are easy. For better compatibility, we have implemented Delaunay triangulation with both SciPy \cite{scipy} and OpenCV \cite{opencv}. Furthermore, since \texttt{benchmark} shuffles the order of keypoints each time loading data, we adviced that the cached ground truth should be refreshed at each shuffle for coherence, which has been adopted in newer versions of Pygmtools. As an abstract, the dataset is iterable. At each iteration, a batch (\texttt{dict}) of data is provided.
+
 \textbf{WillowObject.}
-With \texttt{benchmark} class from Pygmtools \cite{pygmtools}, we easily integrated the data loading, processing, and result evaluating. For better compatibility, we have implemented Delaunay triangulation with both SciPy \cite{scipy} and OpenCV \cite{opencv}. Furthermore, since \texttt{benchmark} shuffles the order of keypoints each time loading data, we adviced that the cached ground truth should be refreshed at each shuffle for coherence, which has been adopted in newer versions of Pygmtools. 
+This dataset is quite standard. We can directly use the universal implementation to get it smoothly involved in training.
 
 \textbf{PascalVOC.}
-We also intend to perform some experiments on PascalVOC \cite{voc1,voc2}, but a CUDA error from Jittor \cite{jittor} was reported for a long period and the dataset itself is too big to do full experiments. Numbers of keypoints varies from instance to instance in PascalVOC. So we specially provide batch support based on padding and support for cases in which keypoints are less than $3$. For batch support, we rewrite \texttt{collate_batch} to make all shapes correct.
+Numbers of keypoints varies from instance to instance in PascalVOC \cite{voc1,voc2}. So we specially provide batch support based on padding and support for cases in which keypoints are less than $3$. For batch support, we rewrite \texttt{collate\_batch} to make all shapes correct. To fit the interface of \texttt{Benchmark.eval}, we perform a matrix-to-list pipeline while testing. We have intended to perform some quantitative experiments on PascalVOC, but a CUDA error from Jittor \cite{jittor} was reported for a long period and the dataset itself is too big to do full experiments. Consequently, only a compatibility test is done, which shows that our pipeline works with the dataset. (P.S., as is mentioned in the presentation, it would be more user-friendly if the \texttt{voc2011\_pairs.npz} file is downloaded automatically together with the main data.) 
+
+\subsection{Model}
+We have integrated multiple mentioned methods in one universal \texttt{LAPGM} class. It has two main modules, a 2D backbone module called \texttt{extractor} and a group matching module consisting of \texttt{gm\_fn} and \texttt{gm\_model} based on interfaces provided by Pygmtools \cite{pygmtools}. The model first extract feature from images and construct a graph from keypoints and the corresponding features. Then it passes the data to the graph matching method to get predictions. Finally, it calculates the loss if target is provided.
+
+\textbf{Efficiency.}
+During data processing, we sucessfully replace all possible Python loop with efficient batched operations provided by Jittor \cite{jittor}, so as to shorten inference time.
+
+\textbf{Hungarian attention.}
+Although it might be straightforward to implement Hungarian attention by reimplementing the permutation loss, we choose to use gradient hook instead. On one hand, gradient hook is orthognal to the loss on which Hungarian attention is applied. We can clearly see the weight applied to each element and replace the loss function without reimplementation. On the other hand, we are able to make more meaningful comparisons on loss if needed since they are calculated with the same equation.
 
 \section{Acknowledgements}
-
-\cite{pca-ipca}, \cite{cie}, \cite{voc1}, \cite{voc2}, \cite{willow}, \cite{vgg}
+Thanks to Dr. Junchi Yan for lectures and advice. Thanks to TAs (especially Runzhong Wang) for advice, instructions, and updates on Pygmtools \cite{pygmtools}.
 
 \newpage 
 \bibliographystyle{plain}
