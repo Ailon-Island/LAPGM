@@ -47,7 +47,6 @@ class GMDataset(Dataset):
         ])
         As = np.array([delaunay_triangulation(kpt) for kpt in kpts])
         tgt = perm_mat_dict[(0, 1)].toarray()
-        valid_mask = np.ones_like(tgt, dtype=bool)
         cls = data_list[0]['cls']
 
         item = {
@@ -55,7 +54,6 @@ class GMDataset(Dataset):
             'kpts': kpts,  # (G, 2, N)
             'As': As,  # (G, N, N)
             'tgt': tgt,  # (N, N)
-            'valid_mask': valid_mask,  # (N, N)
             'ids': id_combination,  # (G)
             'cls': cls,
         }
@@ -71,7 +69,7 @@ class GMDataset(Dataset):
         if key == 'ids':
             # fix batched list of strings
             return np.array(batch).T
-        if key in ['kpts', 'As', 'tgt', 'valid_mask']:
+        if key in ['kpts', 'As', 'tgt']:
             elem_len = max([e.shape[-1] for e in batch])  # N
             if key == 'kpts':
                 temp_data = np.zeros((real_size, 2, 2, elem_len), dtype=elem.dtype)
@@ -81,7 +79,7 @@ class GMDataset(Dataset):
                 temp_data = np.zeros((real_size, 2, elem_len, elem_len), dtype=elem.dtype)
                 for i, e in enumerate(batch):
                     temp_data[i, :, :e.shape[-1], :e.shape[-1]] = e
-            elif key == 'tgt' or key == 'valid_mask':
+            elif key == 'tgt':
                 temp_data = np.zeros((real_size, elem_len, elem_len), dtype=elem.dtype)
                 for i, e in enumerate(batch):
                     temp_data[i, :e.shape[-1], :e.shape[-1]] = e
