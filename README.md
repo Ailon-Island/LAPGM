@@ -1,5 +1,5 @@
 # LAPGM
-Implementation of some graph matching methods, PCA-GM, IPCA-GM, and CIE. Hungarian attention and a soft variant is also included. Course project of (2022-2023-1) AI3067@SJTU: Deep Learning and Its Application.
+Implementation of some graph matching methods, PCA-GM, IPCA-GM, and CIE, heavily based on [Jittor](https://github.com/Jittor/jittor) and [Pygmtools](https://github.com/Thinklab-SJTU/pygmtools). Hungarian attention and a soft variant is also included. Course project of (2022-2023-1) AI3067@SJTU: Deep Learning and Its Application.
 
 Runnable code in `./Code/`.
 
