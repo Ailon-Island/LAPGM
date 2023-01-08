@@ -68,7 +68,7 @@ class GMDataset(Dataset):
         elem_type = type(elem)
         if key == 'ids':
             # fix batched list of strings
-            return np.array(batch).T
+            return np.array(batch)
         if key in ['kpts', 'As', 'tgt']:
             elem_len = max([e.shape[-1] for e in batch])  # N
             if key == 'kpts':

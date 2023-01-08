@@ -93,7 +93,7 @@ The whole project is available at \href{https://github.com/Ailon-Island/LAPGM}{\
 \subsection{Image to Graph}
 In the project, we follow \cite{pca-ipca} and \cite{cie} to work in the setting of graph matching on image keypoints, where we need to first convert images with keypoints into featured graphs to be matched. To construct a graph, we perform Delaunay triangulation \cite{delaunay} on the keypoints. As for node features, we use keypoint descriptors $\mathbf{h}_{si}^{(0)}$ interpolated from CNN (VGG16 \cite{vgg} in implementation) feature map. Furthermore, there are various choices for edge features $\mathbf{e}_{sij}^{(0)}$ if necessary. For simplicity, we use the edge length as the edge feature. Note that it is also possible to use the edge angle or the descriptors from the connected nodes.
 
-\begin{figure}[htbp]
+\begin{figure}[htb]
     \centering
     \subfigure[PIA-GM and PCA-GM.]{\includegraphics[width=0.85\linewidth]{Images/pia-pca.pdf}}
 
@@ -276,8 +276,10 @@ Since the test accuracies are obviously worse than train accuracies, there shoul
         \toprule
         Weight Decay& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        $0$&$94.74\%$& $93.58\%$& $95.26\%$& $90.09\%$& $100.00\%$& $94.74\%$\\
-        $1e-2$& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $100.00\%$& $93.99\%$\\
+        $0$&$\textbf{94.74\%}$& $\textbf{93.58\%}$& $95.26\%$& $90.09\%$& $\textbf{100.00\%}$& $\textbf{94.74\%}$\\
+        $1e-3$& $91.21\%$& $88.58\%$& $\textbf{98.21\%}$& $90.30\%$& $99.99\%$& $93.66\%$\\
+        $5e-3$& $92.19\%$& $92.11\%$& $93.47\%$& $\textbf{91.84\%}$& $\textbf{100.00\%}$& $93.92\%$\\
+        $1e-2$& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $\textbf{100.00\%}$& $93.99\%$\\
         $5e-2$& $91.17\%$& $90.05\%$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
         $1e-1$& $92.78\%$& $91.37\%$& $94.37\%$& $89.82\%$& $99.97\%$& $93.66\%$\\
         \bottomrule
@@ -296,8 +298,8 @@ We have experimented with both AdamW and SGD optimizers. As the results shown in
         \toprule
         Optimizer& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        AdamW& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $100.00\%$& $93.99\%$\\
-        SGD& $91.17\%$& $90.05\%$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
+        AdamW& $\textbf{93.90\%}$& $89.89\%$& $\textbf{94.47\%}$& $\textbf{91.68\%}$& $\textbf{100.00\%}$& $\textbf{93.99\%}$\\
+        SGD& $91.17\%$& $\textbf{90.05\%}$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
         \bottomrule
         
     \end{tabular}
