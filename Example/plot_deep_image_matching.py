@@ -40,7 +40,7 @@ pygm.BACKEND = 'pytorch' # set default backend for pygmtools
 from torch.nn import Module
 
 class Net(Module):
-def __init__(self):
+    def __init__(self):
         super(Net, self).__init__()
         self.model = torchvision.models.resnet18(pretrained=True)
         self.model.fc = torch.nn.Linear(512, 128)

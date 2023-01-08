@@ -62,7 +62,7 @@ class Options():
         self.parser.add_argument('--train_log_iter', type=int, default=100, help='train log frequency')
         self.parser.add_argument('--test_log_iter', type=int, default=1000, help='test log frequency')
         self.parser.add_argument('--use_tensorboard', type=bool, default=True, help='use tensorboard')
-        self.parser.add_argument('--no_tesnorboard', action='store_false', dest='use_tensorboard')
+        self.parser.add_argument('--no_tensorboard', action='store_false', dest='use_tensorboard')
 
         # Misc
         self.parser.add_argument('--seed', type=int, default=0, help='random seed')

@@ -268,7 +268,7 @@ Though is described to improve performance of all methods in \cite{cie}, Hungari
 
 \subsection{Hyperparameter Search}
 \textbf{Weight decay.}
-Since the test accuracies are obviously worse than train accuracies, there should be some overfitting issues. To prevent overfitting, we choose to impose some regulations on the parameters so as to make the model simple and robust, which is called weight decay. From results shown in Table \ref{tab:weightdecay}, we conclude that with proper weight decay, the robustness grows while the model capacity does not fall much.
+Since the test accuracies are obviously worse than train accuracies, there should be some overfitting issues. To prevent overfitting, we choose to impose some regulations on the parameters so as to make the model simple and robust, which is called weight decay. From results shown in Table \ref{tab:weightdecay}, we conclude that with proper weight decay (about $1e-2$), the robustness grows while the model capacity does not fall much.
 
 \begin{table}[htbp]
     \centering
@@ -276,10 +276,12 @@ Since the test accuracies are obviously worse than train accuracies, there shoul
         \toprule
         Weight Decay& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        $0$&$\textbf{94.74\%}$& $\textbf{93.58\%}$& $95.26\%$& $90.09\%$& $\textbf{100.00\%}$& $\textbf{94.74\%}$\\
-        $1e-3$& $91.21\%$& $88.58\%$& $\textbf{98.21\%}$& $90.30\%$& $99.99\%$& $93.66\%$\\
-        $5e-3$& $92.19\%$& $92.11\%$& $93.47\%$& $\textbf{91.84\%}$& $\textbf{100.00\%}$& $93.92\%$\\
-        $1e-2$& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $\textbf{100.00\%}$& $93.99\%$\\
+        $0$& $92.37\%$& $87.26\%$& $94.67\%$& $90.53\%$& $99.92\%$& $92.95\%$\\
+        $1e-4$& $93.11\%$& $89.42\%$& $91.38\%$& $87.98\%$& $\mathbf{100.00\%}$& $92.38\%$\\
+        $5e-4$& $\mathbf{95.14\%}$& $89.26\%$& $93.16\%$& $91.01\%$& $99.98\%$& $93.71\%$\\
+        $1e-3$& $91.21\%$& $88.58\%$& $\mathbf{98.21\%}$& $90.30\%$& $99.99\%$& $93.66\%$\\
+        $5e-3$& $92.19\%$& $\mathbf{92.11\%}$& $93.47\%$& $\mathbf{91.84\%}$& $\mathbf{100.00\%}$& $93.92\%$\\
+        $1e-2$& $93.90\%$& $89.89\%$& $94.47\%$& $91.68\%$& $\mathbf{100.00\%}$& $\mathbf{93.99\%}$\\
         $5e-2$& $91.17\%$& $90.05\%$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
         $1e-1$& $92.78\%$& $91.37\%$& $94.37\%$& $89.82\%$& $99.97\%$& $93.66\%$\\
         \bottomrule
@@ -290,7 +292,7 @@ Since the test accuracies are obviously worse than train accuracies, there shoul
 \end{table}
 
 \textbf{Optimizer.}
-We have experimented with both AdamW and SGD optimizers. As the results shown in Table \ref{tab:optimizer}, AdamW stably optimize the model to a better minima than SGD. 
+We have experimented with both AdamW and SGD optimizers. As the results shown in Table \ref{tab:optimizer}, AdamW stably optimize the model to a way better minima than SGD. Chances are that the learning rate is too big for SGD to converge.
 
 \begin{table}[htbp]
     \centering
@@ -298,8 +300,8 @@ We have experimented with both AdamW and SGD optimizers. As the results shown in
         \toprule
         Optimizer& Winebottle& Car& Motorbike& Duck& Face& Mean\\
         \midrule
-        AdamW& $\textbf{93.90\%}$& $89.89\%$& $\textbf{94.47\%}$& $\textbf{91.68\%}$& $\textbf{100.00\%}$& $\textbf{93.99\%}$\\
-        SGD& $91.17\%$& $\textbf{90.05\%}$& $91.74\%$& $86.57\%$& $99.99\%$& $91.74\%$\\
+        AdamW& $\textbf{93.90\%}$& $\textbf{89.89\%}$& $\textbf{94.47\%}$& $\textbf{91.68\%}$& $\textbf{100.00\%}$& $\textbf{93.99\%}$\\
+        SGD& $36.09\%$& $34.21\%$& $50.05\%$& $37.89\%$& $85.80\%$& $48.81\%$\\
         \bottomrule
         
     \end{tabular}
@@ -364,7 +366,7 @@ During data processing, we sucessfully replace all possible Python loop with eff
 Although it might be straightforward to implement Hungarian attention by reimplementing the permutation loss, we choose to use gradient hook instead. On one hand, gradient hook is orthognal to the loss on which Hungarian attention is applied. We can clearly see the weight applied to each element and replace the loss function without reimplementation. On the other hand, we are able to make more meaningful comparisons on loss if needed since they are calculated with the same equation.
 
 \section{Acknowledgements}
-Thanks to Dr. Junchi Yan for lectures and advice. Thanks to TAs (especially Runzhong Wang) for advice, instructions, and updates on Pygmtools \cite{pygmtools}.
+Thanks to Dr. Junchi Yan for lectures and advice. Thanks to TAs (especially Runzhong Wang) for advice, instructions, and updates on Pygmtools \cite{pygmtools}. Thanks to Wenhao Zhang for help with debugging.
 
 \newpage 
 \bibliographystyle{plain}
